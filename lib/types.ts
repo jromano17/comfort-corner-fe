@@ -40,7 +40,7 @@ export interface ChairVariant {
   material: Material;
   colorOption: ColorOption;
   dimension: Dimension;
-  price: number;
+  finalPrice: number;
   image: string;
 }
 
@@ -51,3 +51,26 @@ export const CATEGORY_NAMES = [
 ] as const;
 
 export type CategoryName = (typeof CATEGORY_NAMES)[number];
+
+// Auth types
+export interface User {
+  id: number;
+  email: string;
+  username: string;
+}
+
+export interface AuthResponse {
+  token: string;
+  user: User;
+}
+
+export interface LoginRequest {
+  username: string;
+  password: string;
+}
+
+export interface RegisterRequest {
+  email: string;
+  username: string;
+  password: string;
+}

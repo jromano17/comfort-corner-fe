@@ -13,12 +13,16 @@ const nextConfig = {
       },
     ],
   },
-  // Proxy API requests to backend to avoid CORS issues in development
+  // Proxy API and auth requests to backend to avoid CORS issues in development
   async rewrites() {
     return [
       {
         source: "/api/:path*",
         destination: "http://localhost:8080/api/:path*",
+      },
+      {
+        source: "/auth/:path*",
+        destination: "http://localhost:8080/auth/:path*",
       },
     ];
   },
