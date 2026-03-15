@@ -41,7 +41,8 @@ export function RegisterForm() {
     setIsSubmitting(true);
 
     try {
-      await register({ email, username, password });
+      let role = "ROLE_ADMIN";
+      await register({ email, username, password, role });
     } catch (err) {
       setError(err instanceof Error ? err.message : "Registration failed");
     } finally {

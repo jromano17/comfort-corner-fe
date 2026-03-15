@@ -11,7 +11,7 @@ import {
   Field,
   FieldGroup,
   FieldLabel,
-  FieldMessage,
+  FieldDescription,
 } from "@/components/ui/field";
 
 export function LoginForm() {

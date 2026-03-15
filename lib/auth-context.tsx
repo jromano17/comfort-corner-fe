@@ -17,6 +17,7 @@ interface AuthContextType {
   token: string | null;
   isLoading: boolean;
   isAuthenticated: boolean;
+  isAdmin: boolean;
   login: (data: LoginRequest) => Promise<void>;
   register: (data: RegisterRequest) => Promise<void>;
   logout: () => Promise<void>;
@@ -40,25 +41,27 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
     if (storedToken && storedUser) {
       setToken(storedToken);
-      setUser(JSON.parse(storedUser));
+      //setUser(JSON.parse(storedUser));
     }
     setIsLoading(false);
   }, []);
 
   const login = useCallback(async (data: LoginRequest) => {
     const response = await apiLogin(data);
-    setToken(response.token);
+    console.log(response);
+    setToken(response.accessToken);   
     setUser(response.user);
-    sessionStorage.setItem(TOKEN_KEY, response.token);
+    sessionStorage.setItem(TOKEN_KEY, response.accessToken);
     sessionStorage.setItem(USER_KEY, JSON.stringify(response.user));
-    router.push("/");
+    router.push("/admin");
   }, [router]);
 
   const register = useCallback(async (data: RegisterRequest) => {
+    console.log(data)
     const response = await apiRegister(data);
-    setToken(response.token);
+    setToken(response.accessToken);
     setUser(response.user);
-    sessionStorage.setItem(TOKEN_KEY, response.token);
+    sessionStorage.setItem(TOKEN_KEY, response.accessToken);
     sessionStorage.setItem(USER_KEY, JSON.stringify(response.user));
     router.push("/");
   }, [router]);
@@ -86,6 +89,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         token,
         isLoading,
         isAuthenticated: !!token && !!user,
+        isAdmin: !!user && user.role === "ROLE_ADMIN",
         login,
         register,
         logout,
@@ -97,7 +101,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 }
 
 export function useAuth() {
+  
+  /*
+    console.log("auth context");
+    console.log(user);
+    console.log(token);
+    console.log(isLoading);*/
   const context = useContext(AuthContext);
+  console.log(context)
   if (context === undefined) {
     throw new Error("useAuth must be used within an AuthProvider");
   }
