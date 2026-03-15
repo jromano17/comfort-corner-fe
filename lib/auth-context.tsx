@@ -41,13 +41,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
     if (storedToken && storedUser) {
       setToken(storedToken);
-      //setUser(JSON.parse(storedUser));
+      setUser(JSON.parse(storedUser));
     }
     setIsLoading(false);
   }, []);
 
   const login = useCallback(async (data: LoginRequest) => {
     const response = await apiLogin(data);
+    console.log("auth context login:");
     console.log(response);
     setToken(response.accessToken);   
     setUser(response.user);
@@ -62,7 +63,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setToken(response.accessToken);
     setUser(response.user);
     sessionStorage.setItem(TOKEN_KEY, response.accessToken);
-    sessionStorage.setItem(USER_KEY, JSON.stringify(response.user));
+    //sessionStorage.setItem(USER_KEY, JSON.stringify(response.user));
     router.push("/");
   }, [router]);
 

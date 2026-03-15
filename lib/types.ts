@@ -48,7 +48,7 @@ export interface ChairVariant {
   material: Material;
   colorOption: ColorOption;
   dimension: Dimension;
-  price: number;
+  finalPrice: number;
   stockQuantity: number;
   image: string;
 }
@@ -138,6 +138,6 @@ export interface CreateChairVariantRequest {
   materialId: number;
   colorOptionId: number;
   dimensionId: number;
-  price: number;
+  finalPrice: number;
   stockQuantity: number;
 }

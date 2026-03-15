@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { Armchair, User, LogOut } from "lucide-react";
+import { Armchair, User, LogOut, Settings } from "lucide-react";
 import { useAuth } from "@/lib/auth-context";
 import { Button } from "@/components/ui/button";
 import {
@@ -13,7 +13,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 
 export function Header() {
-  const { user, isAuthenticated, logout, isLoading } = useAuth();
+  const { user, isAuthenticated, isAdmin, logout, isLoading } = useAuth();
 
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
@@ -39,6 +39,15 @@ export function Header() {
             Catalogue
           </Link>
 
+          {isAdmin && (
+            <Link
+              href="/admin"
+              className="text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
+            >
+              Admin
+            </Link>
+          )}
+
           {!isLoading && (
             <>
               {isAuthenticated ? (
@@ -52,9 +61,16 @@ export function Header() {
                   <DropdownMenuContent align="end" className="w-48">
                     <div className="px-2 py-1.5 text-sm">
                       <p className="font-medium">{user?.username}</p>
-                      <p className="text-muted-foreground text-xs">{user?.email}</p>
                     </div>
                     <DropdownMenuSeparator />
+                    {isAdmin && (
+                      <DropdownMenuItem asChild className="cursor-pointer">
+                        <Link href="/admin">
+                          <Settings className="mr-2 h-4 w-4" />
+                          Admin Panel
+                        </Link>
+                      </DropdownMenuItem>
+                    )}
                     <DropdownMenuItem onClick={logout} className="text-destructive cursor-pointer">
                       <LogOut className="mr-2 h-4 w-4" />
                       Sign out

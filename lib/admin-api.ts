@@ -24,6 +24,18 @@ function authHeaders(token: string): HeadersInit {
   };
 }
 
+// Helper to get token from sessionStorage (client-side)
+function getStoredToken(): string | null {
+  if (typeof window === "undefined") return null;
+  return sessionStorage.getItem("auth_token");
+}
+
+function getRequiredToken(): string {
+  const token = getStoredToken();
+  if (!token) throw new Error("Authentication required");
+  return token;
+}
+
 // Categories
 export async function fetchCategories(): Promise<Category[]> {
   const response = await fetch(`${API_BASE_URL}/api/categories`);
@@ -33,21 +45,32 @@ export async function fetchCategories(): Promise<Category[]> {
 
 export async function createCategory(
   data: CreateCategoryRequest,
-  token: string
+  token?: string
 ): Promise<Category> {
+  const authToken = token || getRequiredToken();
   const response = await fetch(`${API_BASE_URL}/api/categories`, {
     method: "POST",
-    headers: authHeaders(token),
+    headers: authHeaders(authToken),
     body: JSON.stringify(data),
   });
   if (!response.ok) throw new Error("Failed to create category");
   return response.json();
 }
 
+export async function deleteCategory(id: number, token?: string): Promise<void> {
+  const authToken = token || getRequiredToken();
+  const response = await fetch(`${API_BASE_URL}/api/categories/${id}`, {
+    method: "DELETE",
+    headers: authHeaders(authToken),
+  });
+  if (!response.ok) throw new Error("Failed to delete category");
+}
+
 // Suppliers
-export async function fetchSuppliers(token: string): Promise<Supplier[]> {
+export async function fetchSuppliers(token?: string): Promise<Supplier[]> {
+  const authToken = token || getRequiredToken();
   const response = await fetch(`${API_BASE_URL}/api/suppliers`, {
-    headers: authHeaders(token),
+    headers: authHeaders(authToken),
   });
   if (!response.ok) throw new Error("Failed to fetch suppliers");
   return response.json();
@@ -55,25 +78,36 @@ export async function fetchSuppliers(token: string): Promise<Supplier[]> {
 
 export async function createSupplier(
   data: CreateSupplierRequest,
-  token: string
+  token?: string
 ): Promise<Supplier> {
+  const authToken = token || getRequiredToken();
   const response = await fetch(`${API_BASE_URL}/api/suppliers`, {
     method: "POST",
-    headers: authHeaders(token),
+    headers: authHeaders(authToken),
     body: JSON.stringify(data),
   });
   if (!response.ok) throw new Error("Failed to create supplier");
   return response.json();
 }
 
+export async function deleteSupplier(id: number, token?: string): Promise<void> {
+  const authToken = token || getRequiredToken();
+  const response = await fetch(`${API_BASE_URL}/api/suppliers/${id}`, {
+    method: "DELETE",
+    headers: authHeaders(authToken),
+  });
+  if (!response.ok) throw new Error("Failed to delete supplier");
+}
+
 // Chairs
 export async function createChair(
   data: CreateChairRequest,
-  token: string
+  token?: string
 ): Promise<Chair> {
+  const authToken = token || getRequiredToken();
   const response = await fetch(`${API_BASE_URL}/api/chairs`, {
     method: "POST",
-    headers: authHeaders(token),
+    headers: authHeaders(authToken),
     body: JSON.stringify(data),
   });
   if (!response.ok) throw new Error("Failed to create chair");
@@ -83,8 +117,9 @@ export async function createChair(
 export async function uploadChairImages(
   chairId: number,
   files: File[],
-  token: string
+  token?: string
 ): Promise<string[]> {
+  const authToken = token || getRequiredToken();
   const formData = new FormData();
   files.forEach((file) => {
     formData.append("images", file);
@@ -93,7 +128,7 @@ export async function uploadChairImages(
   const response = await fetch(`${API_BASE_URL}/api/chairs/${chairId}/images`, {
     method: "POST",
     headers: {
-      Authorization: `Bearer ${token}`,
+      Authorization: `Bearer ${authToken}`,
     },
     body: formData,
   });
@@ -101,10 +136,32 @@ export async function uploadChairImages(
   return response.json();
 }
 
-export async function deleteChair(id: number, token: string): Promise<void> {
+// Upload a single image to chair gallery
+export async function uploadChairImage(
+  chairId: number,
+  file: File,
+  token?: string
+): Promise<string> {
+  const authToken = token || getRequiredToken();
+  const formData = new FormData();
+  formData.append("image", file);
+
+  const response = await fetch(`${API_BASE_URL}/api/chairs/${chairId}/images`, {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${authToken}`,
+    },
+    body: formData,
+  });
+  if (!response.ok) throw new Error("Failed to upload image");
+  return response.json();
+}
+
+export async function deleteChair(id: number, token?: string): Promise<void> {
+  const authToken = token || getRequiredToken();
   const response = await fetch(`${API_BASE_URL}/api/chairs/${id}`, {
     method: "DELETE",
-    headers: authHeaders(token),
+    headers: authHeaders(authToken),
   });
   if (!response.ok) throw new Error("Failed to delete chair");
 }
@@ -118,11 +175,12 @@ export async function fetchMaterials(): Promise<Material[]> {
 
 export async function createMaterial(
   data: CreateMaterialRequest,
-  token: string
+  token?: string
 ): Promise<Material> {
+  const authToken = token || getRequiredToken();
   const response = await fetch(`${API_BASE_URL}/api/materials`, {
     method: "POST",
-    headers: authHeaders(token),
+    headers: authHeaders(authToken),
     body: JSON.stringify(data),
   });
   if (!response.ok) throw new Error("Failed to create material");
@@ -138,11 +196,12 @@ export async function fetchColorOptions(): Promise<ColorOption[]> {
 
 export async function createColorOption(
   data: CreateColorOptionRequest,
-  token: string
+  token?: string
 ): Promise<ColorOption> {
+  const authToken = token || getRequiredToken();
   const response = await fetch(`${API_BASE_URL}/api/color-options`, {
     method: "POST",
-    headers: authHeaders(token),
+    headers: authHeaders(authToken),
     body: JSON.stringify(data),
   });
   if (!response.ok) throw new Error("Failed to create color option");
@@ -158,11 +217,12 @@ export async function fetchDimensions(): Promise<Dimension[]> {
 
 export async function createDimension(
   data: CreateDimensionRequest,
-  token: string
+  token?: string
 ): Promise<Dimension> {
+  const authToken = token || getRequiredToken();
   const response = await fetch(`${API_BASE_URL}/api/dimensions`, {
     method: "POST",
-    headers: authHeaders(token),
+    headers: authHeaders(authToken),
     body: JSON.stringify(data),
   });
   if (!response.ok) throw new Error("Failed to create dimension");
@@ -172,11 +232,12 @@ export async function createDimension(
 // Chair Variants
 export async function createChairVariant(
   data: CreateChairVariantRequest,
-  token: string
+  token?: string
 ): Promise<ChairVariant> {
+  const authToken = token || getRequiredToken();
   const response = await fetch(`${API_BASE_URL}/api/chair-variants`, {
     method: "POST",
-    headers: authHeaders(token),
+    headers: authHeaders(authToken),
     body: JSON.stringify(data),
   });
   if (!response.ok) throw new Error("Failed to create chair variant");
@@ -186,8 +247,9 @@ export async function createChairVariant(
 export async function uploadVariantImage(
   variantId: number,
   file: File,
-  token: string
+  token?: string
 ): Promise<string> {
+  const authToken = token || getRequiredToken();
   const formData = new FormData();
   formData.append("image", file);
 
@@ -196,7 +258,7 @@ export async function uploadVariantImage(
     {
       method: "POST",
       headers: {
-        Authorization: `Bearer ${token}`,
+        Authorization: `Bearer ${authToken}`,
       },
       body: formData,
     }
@@ -207,11 +269,12 @@ export async function uploadVariantImage(
 
 export async function deleteChairVariant(
   id: number,
-  token: string
+  token?: string
 ): Promise<void> {
+  const authToken = token || getRequiredToken();
   const response = await fetch(`${API_BASE_URL}/api/chair-variants/${id}`, {
     method: "DELETE",
-    headers: authHeaders(token),
+    headers: authHeaders(authToken),
   });
   if (!response.ok) throw new Error("Failed to delete chair variant");
 }
