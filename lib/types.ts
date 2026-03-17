@@ -30,7 +30,7 @@ export interface Material {
 export interface ColorOption {
   id: number;
   name: string;
-  hex: string;
+  hexCode: string;
 }
 
 export interface Dimension {
@@ -122,7 +122,7 @@ export interface CreateMaterialRequest {
 
 export interface CreateColorOptionRequest {
   name: string;
-  hex: string;
+  hexCode: string;
 }
 
 export interface CreateDimensionRequest {

@@ -144,9 +144,9 @@ export async function uploadChairImage(
 ): Promise<string> {
   const authToken = token || getRequiredToken();
   const formData = new FormData();
-  formData.append("image", file);
+  formData.append("file", file);
 
-  const response = await fetch(`${API_BASE_URL}/api/chairs/${chairId}/images`, {
+  const response = await fetch(`${API_BASE_URL}/api/chairs/${chairId}/gallery`, {
     method: "POST",
     headers: {
       Authorization: `Bearer ${authToken}`,
@@ -154,7 +154,7 @@ export async function uploadChairImage(
     body: formData,
   });
   if (!response.ok) throw new Error("Failed to upload image");
-  return response.json();
+  return response.text();
 }
 
 export async function deleteChair(id: number, token?: string): Promise<void> {
@@ -240,6 +240,9 @@ export async function createChairVariant(
     headers: authHeaders(authToken),
     body: JSON.stringify(data),
   });
+  console.log("admin api");
+  console.log(response);
+  console.log(data);
   if (!response.ok) throw new Error("Failed to create chair variant");
   return response.json();
 }
@@ -251,7 +254,7 @@ export async function uploadVariantImage(
 ): Promise<string> {
   const authToken = token || getRequiredToken();
   const formData = new FormData();
-  formData.append("image", file);
+  formData.append("file", file);
 
   const response = await fetch(
     `${API_BASE_URL}/api/chair-variants/${variantId}/image`,
@@ -263,8 +266,11 @@ export async function uploadVariantImage(
       body: formData,
     }
   );
+  console.log("admin api");
+  console.log(response);
+  console.log(formData);
   if (!response.ok) throw new Error("Failed to upload variant image");
-  return response.json();
+  return response.text();
 }
 
 export async function deleteChairVariant(
