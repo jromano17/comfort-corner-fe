@@ -11,6 +11,8 @@ import {
   Ruler,
   Package,
   Truck,
+  ShoppingBasket,
+  DollarSign
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -22,6 +24,8 @@ const navItems = [
   { href: "/admin/materials", label: "Materials", icon: Package },
   { href: "/admin/colors", label: "Colors", icon: Palette },
   { href: "/admin/dimensions", label: "Dimensions", icon: Ruler },
+  { href: "/admin/orders", label: "Orders", icon: ShoppingBasket },
+  { href: "/admin/incomes", label: "Income", icon: DollarSign },
 ];
 
 export function AdminSidebar() {

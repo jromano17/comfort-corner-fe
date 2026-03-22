@@ -1,8 +1,9 @@
 "use client";
 
 import Link from "next/link";
-import { Armchair, User, LogOut, Settings } from "lucide-react";
+import { Armchair, User, LogOut, Settings, ShoppingCart } from "lucide-react";
 import { useAuth } from "@/lib/auth-context";
+import { useCart } from "@/lib/cart-context";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -14,6 +15,7 @@ import {
 
 export function Header() {
   const { user, isAuthenticated, isAdmin, logout, isLoading } = useAuth();
+  const { itemCount } = useCart();
 
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
@@ -48,6 +50,20 @@ export function Header() {
             </Link>
           )}
 
+          {isAuthenticated && (
+            <Link href="/cart" className="relative">
+              <Button variant="ghost" size="icon-sm">
+                <ShoppingCart className="h-5 w-5" />
+                <span className="sr-only">Cart</span>
+              </Button>
+              {itemCount > 0 && (
+                <span className="absolute -top-1 -right-1 flex h-5 w-5 items-center justify-center rounded-full bg-primary text-xs font-medium text-primary-foreground">
+                  {itemCount > 99 ? "99+" : itemCount}
+                </span>
+              )}
+            </Link>
+          )}
+
           {!isLoading && (
             <>
               {isAuthenticated ? (
@@ -61,6 +77,7 @@ export function Header() {
                   <DropdownMenuContent align="end" className="w-48">
                     <div className="px-2 py-1.5 text-sm">
                       <p className="font-medium">{user?.username}</p>
+                      <p className="text-muted-foreground text-xs">{user?.email}</p>
                     </div>
                     <DropdownMenuSeparator />
                     {isAdmin && (

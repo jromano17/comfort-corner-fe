@@ -13,6 +13,12 @@ import {
   CreateColorOptionRequest,
   CreateDimensionRequest,
   CreateChairVariantRequest,
+  Order,
+  OrderStatus,
+  PaginatedOrders,
+  OrderDetail,
+  Income,
+  CreateIncomeRecord,
 } from "./types";
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "";
@@ -283,4 +289,111 @@ export async function deleteChairVariant(
     headers: authHeaders(authToken),
   });
   if (!response.ok) throw new Error("Failed to delete chair variant");
+}
+
+
+//all orders
+export async function fetchOrders(token?: string): Promise<Order[]> {
+  const authToken = token || getRequiredToken();
+  const response = await fetch(`${API_BASE_URL}/api/orders`, {
+    method: "GET",
+    headers: authHeaders(authToken)
+  });
+  if (!response.ok) throw new Error("Failed to fetch orders");
+
+  const data = await response.json(); 
+  return data.content;
+}
+
+export async function fetchIncomes(
+  token?: string
+): Promise<Income[]> {
+  const authToken = token || getRequiredToken();
+
+  const response = await fetch(`${API_BASE_URL}/api/income`, {
+    method: "GET",
+    headers: authHeaders(authToken)
+  });
+  
+  if (!response.ok) throw new Error("Failed to fetch incomes");
+  return response.json();
+}
+
+
+export async function fetchOrderss(
+  page: number = 0, 
+  size: number = 10, 
+  token?: string
+): Promise<PaginatedOrders> {
+  const authToken = token || getRequiredToken();
+  
+  const params = new URLSearchParams({
+    page: page.toString(),
+    size: size.toString(),
+    sort: "createdAt,desc" 
+  });
+
+  const response = await fetch(`${API_BASE_URL}/api/orders?${params.toString()}`, {
+    method: "GET",
+    headers: authHeaders(authToken)
+  });
+  
+  if (!response.ok) throw new Error("Failed to fetch orders");
+  
+  const data = await response.json();
+  return data; 
+}
+
+export async function fetchOrderById(orderId: string,token?: string): Promise<OrderDetail> {
+  const authToken = token || getRequiredToken();
+  const response = await fetch(`${API_BASE_URL}/api/orders/${orderId}`, {
+    method: "GET",
+    headers: authHeaders(authToken)
+  });
+  if (!response.ok) throw new Error("Failed to fetch order with ID:" + orderId);
+  let s = response.json();
+  console.log(s);
+return s;
+}
+export async function changeOrderStatus(
+  orderId: number, 
+  newStatus: OrderStatus, 
+  changedBy?: number,
+  token?: string
+): Promise<Order> {
+  const params = new URLSearchParams({newStatus: newStatus,});
+  if (changedBy) {
+    params.append("changedBy", changedBy.toString());
+  }
+  const authToken = token || getRequiredToken();
+  const response = await fetch(`${API_BASE_URL}/api/orders/${orderId}/status?${params.toString()}`, {
+    method: "PATCH",
+    headers: authHeaders(authToken)
+  });
+  
+  if (!response.ok) {
+    const errorData = await response.json().catch(() => ({}));
+    throw new Error(errorData.message || `Failed to update order to ${newStatus}`);
+  }
+
+  return response.json();
+}
+export async function createIncomeRecord(
+  data: CreateIncomeRecord,
+  token?: string
+): Promise<Income> {
+  const authToken = token || getRequiredToken();
+  const response = await fetch(`${API_BASE_URL}/api/income/${data.orderId}`, {
+    method: "POST",
+    headers: authHeaders(authToken),
+    body: JSON.stringify(data)
+  });
+  
+  console.log(response);
+  if (!response.ok) {
+    const errorData = await response.json().catch(() => ({}));
+    throw new Error(errorData.message || `Failed to add an income record to order with ID ${data.orderId}`);
+  }
+
+  return response.json();
 }

@@ -18,7 +18,7 @@ export interface Chair {
   category: Category;
   supplier: Supplier;
   basePrice: number;
-  gallery: string[];
+  galleryImageUrls: string[];
 }
 
 export interface Material {
@@ -140,4 +140,111 @@ export interface CreateChairVariantRequest {
   dimensionId: number;
   finalPrice: number;
   stockQuantity: number;
+}
+export interface Address {
+  fullName: string;
+  street: string;
+  city: string;
+  postalCode: string;
+  country: string;
+}
+
+export interface OrderItem {
+  variantId: number;
+  quantity: number;
+  priceAtPurchase: number;
+}
+
+export interface CreateOrderRequest {
+  billingAddress: Address;
+  shippingAddress: Address;
+  orderItems: OrderItem[];
+}
+
+export interface Order {
+  id: number;
+  orderNumber : string;
+  createdAt: string;
+  totalPrice: number;
+  currentStatus: string;
+}
+export interface PaginatedOrders {
+  content: Order[];
+  totalPages: number;
+  totalElements: number;
+  size: number;
+  number: number; 
+}
+export interface OrderDetail {
+  id: number;
+  userId: number;
+  orderNumber : string;
+  createdAt: string;
+  billingAddress: Address;
+  shippingAddress: Address;
+  items: OrderItemResponse[];
+  totalPrice: number;
+  currentStatus: string;
+  shipment: Shipment;
+}
+export interface Shipment{
+  
+    id : number;
+    orderId : number;
+    trackingNumber : string;
+    status : ShipmentStatus;
+    estimatedDeliveryDate : string;
+    createDate : string;
+}
+export enum ShipmentStatus {
+    PREPARING = "PREPARING",
+    SHIPPED = "SHIPPED",
+    IN_TRANSIT = "IN_TRANSIT",
+    OUT_FOR_DELIVERY = "OUT_FOR_DELIVERY",
+    DELIVERED = "DELIVERED",
+    FAILED = "FAILED",
+    PROCESSING = "PROCESSING",
+    CANCELLED = "CANCELLED"
+}
+export interface OrderItemResponse {
+  id: number;
+  variantId: number;
+  quantity: number;
+  priceAtPurchase: number;
+  name: string;
+}
+export enum OrderStatus {
+  PENDING = "PENDING",
+  PROCESSING = "PROCESSING",
+  APPROVED = "APPROVED",
+  CREATED = "CREATED",
+  SHIPPED = "SHIPPED",
+  DELIVERED = "DELIVERED",
+  CANCELLED = "CANCELLED",
+}
+interface OrderStatusPickerProps {
+  orderId: number;
+  currentStatus: OrderStatus;
+}
+export interface CartItem {
+  variant: ChairVariant;
+  chairName: string;
+  quantity: number;
+}
+
+export interface Income{
+  id : number;
+  orderId : number;
+  recordedAt : string;
+  incomeAmount : number;
+  tax : number;
+  cost : number;
+  netIncome : number;
+}
+
+export interface CreateIncomeRecord{
+  orderId : number;
+  incomeAmount : number;
+  tax : number;
+  cost : number;
 }

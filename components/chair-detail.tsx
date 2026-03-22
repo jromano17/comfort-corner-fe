@@ -3,8 +3,10 @@
 import { useState, useEffect, useMemo } from "react";
 import Link from "next/link";
 import useSWR from "swr";
-import { ArrowLeft, Ruler, Package, Weight } from "lucide-react";
+import { ArrowLeft, Ruler, Package, Weight, ShoppingCart, Check } from "lucide-react";
 import { fetchChairById, fetchChairVariants } from "@/lib/api";
+import { useAuth } from "@/lib/auth-context";
+import { useCart } from "@/lib/cart-context";
 import { ChairVariant } from "@/lib/types";
 import { ImageGallery } from "./image-gallery";
 import { VariantSelector } from "./variant-selector";
@@ -18,6 +20,9 @@ interface ChairDetailProps {
 
 export function ChairDetail({ chairId }: ChairDetailProps) {
   const [selectedVariant, setSelectedVariant] = useState<ChairVariant | null>(null);
+  const [addedToCart, setAddedToCart] = useState(false);
+  const { isAuthenticated } = useAuth();
+  const { addItem } = useCart();
 
   const { data: chair, error: chairError, isLoading: chairLoading } = useSWR(
     `chair-${chairId}`,
@@ -64,6 +69,14 @@ export function ChairDetail({ chairId }: ChairDetailProps) {
 
   const isLoading = chairLoading || variantsLoading;
   const error = chairError || variantsError;
+
+  const handleAddToCart = () => {
+    if (selectedVariant && chair) {
+      addItem(selectedVariant, chair.name);
+      setAddedToCart(true);
+      setTimeout(() => setAddedToCart(false), 2000);
+    }
+  };
 
   if (isLoading) {
     return (
@@ -178,6 +191,40 @@ export function ChairDetail({ chairId }: ChairDetailProps) {
                   <span>Weight Capacity: {selectedVariant.dimension.weightCapacity} kg</span>
                 </div>
               </div>
+            </div>
+          )}
+
+          {selectedVariant && (
+            <div className="flex flex-col gap-3 pt-2">
+              {isAuthenticated ? (
+                <Button
+                  size="lg"
+                  className="w-full"
+                  onClick={handleAddToCart}
+                  disabled={addedToCart}
+                >
+                  {addedToCart ? (
+                    <>
+                      <Check className="mr-2 h-5 w-5" />
+                      Added to Cart
+                    </>
+                  ) : (
+                    <>
+                      <ShoppingCart className="mr-2 h-5 w-5" />
+                      Add to Cart
+                    </>
+                  )}
+                </Button>
+              ) : (
+                <div className="flex flex-col gap-2">
+                  <Button size="lg" className="w-full" asChild>
+                    <Link href="/login">Sign in to Order</Link>
+                  </Button>
+                  <p className="text-xs text-muted-foreground text-center">
+                    You need to be logged in to add items to your cart
+                  </p>
+                </div>
+              )}
             </div>
           )}
         </div>

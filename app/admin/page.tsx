@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { Sofa, Layers, Truck, Package, Palette, Ruler } from "lucide-react";
+import { Sofa, Layers, Truck, Package, Palette, Ruler, ShoppingBasket, DollarSign } from "lucide-react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 
 const quickLinks = [
@@ -40,6 +40,18 @@ const quickLinks = [
     label: "Manage Dimensions",
     description: "Add or view dimension presets",
     icon: Ruler,
+  },
+  {
+    href: "/admin/orders",
+    label: "Manage Orders",
+    description: "View order presets",
+    icon: ShoppingBasket,
+  },
+  {
+    href: "/admin/incomes",
+    label: "Manage Incomes",
+    description: "View income records",
+    icon: DollarSign,
   },
 ];
 
