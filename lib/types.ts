@@ -158,7 +158,8 @@ export interface OrderItem {
 export interface CreateOrderRequest {
   billingAddress: Address;
   shippingAddress: Address;
-  orderItems: OrderItem[];
+  items: OrderItem[];
+  totalPrice: number;
 }
 
 export interface Order {

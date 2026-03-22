@@ -33,7 +33,7 @@ export async function login(data: LoginRequest): Promise<AuthResponse> {
 }
 
 export async function register(data: RegisterRequest): Promise<AuthResponse> {
-  data.role = "ROLE_ADMIN";
+  data.role = "ROLE_USER";
   const response = await fetch(`${API_BASE_URL}/auth/register`, {
     method: "POST",
     headers: {

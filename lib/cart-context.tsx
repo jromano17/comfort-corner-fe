@@ -11,7 +11,7 @@ import {
 import { CartItem, ChairVariant } from "./types";
 
 interface CartContextType {
-  items: CartItem[];
+  cartItems: CartItem[];
   itemCount: number;
   totalAmount: number;
   addItem: (variant: ChairVariant, chairName: string, quantity?: number) => void;
@@ -25,7 +25,7 @@ const CartContext = createContext<CartContextType | undefined>(undefined);
 const CART_STORAGE_KEY = "comfort_corner_cart";
 
 export function CartProvider({ children }: { children: ReactNode }) {
-  const [items, setItems] = useState<CartItem[]>([]);
+  const [cartItems, setItems] = useState<CartItem[]>([]);
   const [isHydrated, setIsHydrated] = useState(false);
 
   // Load cart from localStorage on mount
@@ -44,9 +44,9 @@ export function CartProvider({ children }: { children: ReactNode }) {
   // Save cart to localStorage when items change
   useEffect(() => {
     if (isHydrated) {
-      localStorage.setItem(CART_STORAGE_KEY, JSON.stringify(items));
+      localStorage.setItem(CART_STORAGE_KEY, JSON.stringify(cartItems));
     }
-  }, [items, isHydrated]);
+  }, [cartItems, isHydrated]);
 
   const addItem = useCallback(
     (variant: ChairVariant, chairName: string, quantity: number = 1) => {
@@ -93,8 +93,8 @@ export function CartProvider({ children }: { children: ReactNode }) {
     setItems([]);
   }, []);
 
-  const itemCount = items.reduce((sum, item) => sum + item.quantity, 0);
-  const totalAmount = items.reduce(
+  const itemCount = cartItems.reduce((sum, item) => sum + item.quantity, 0);
+  const totalAmount = cartItems.reduce(
     (sum, item) => sum + item.variant.finalPrice * item.quantity,
     0
   );
@@ -102,7 +102,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
   return (
     <CartContext.Provider
       value={{
-        items,
+        cartItems,
         itemCount,
         totalAmount,
         addItem,

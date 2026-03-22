@@ -51,7 +51,7 @@ export function Header() {
           )}
 
           {isAuthenticated && (
-            <Link href="/cart" className="relative">
+            <Link href="/checkout" className="relative">
               <Button variant="ghost" size="icon-sm">
                 <ShoppingCart className="h-5 w-5" />
                 <span className="sr-only">Cart</span>
@@ -77,7 +77,7 @@ export function Header() {
                   <DropdownMenuContent align="end" className="w-48">
                     <div className="px-2 py-1.5 text-sm">
                       <p className="font-medium">{user?.username}</p>
-                      <p className="text-muted-foreground text-xs">{user?.email}</p>
+                      {/*<p className="text-muted-foreground text-xs">{user?.email}</p>*/}
                     </div>
                     <DropdownMenuSeparator />
                     {isAdmin && (
