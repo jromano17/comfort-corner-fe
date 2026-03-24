@@ -19,6 +19,8 @@ import {
   OrderDetail,
   Income,
   CreateIncomeRecord,
+  Shipment,
+  CreateShipment,
 } from "./types";
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "";
@@ -33,7 +35,8 @@ function authHeaders(token: string): HeadersInit {
 // Helper to get token from sessionStorage (client-side)
 function getStoredToken(): string | null {
   if (typeof window === "undefined") return null;
-  return sessionStorage.getItem("auth_token");
+  //return sessionStorage.getItem("auth_token");
+  return sessionStorage.getItem("comfort_corner_token");
 }
 
 function getRequiredToken(): string {
@@ -395,5 +398,36 @@ export async function createIncomeRecord(
     throw new Error(errorData.message || `Failed to add an income record to order with ID ${data.orderId}`);
   }
 
+  return response.json();
+}
+
+export async function updateShipmentStatus(
+  shipmentId: number | undefined,
+  status : string,
+  token?: string
+): Promise<Shipment> {
+  const authToken = token || getRequiredToken();
+  const params = new URLSearchParams({status: status,});
+  const response = await fetch(`${API_BASE_URL}/api/shipments/${shipmentId}?${params.toString()}`, {
+    method: "PATCH",
+    headers: authHeaders(authToken)
+  });
+
+  if (!response.ok) throw new Error("Failed to change shipment status");
+  return response.json();
+}
+export async function createShipment(
+  data: CreateShipment,
+  token?: string
+): Promise<Shipment> {
+  const authToken = token || getRequiredToken();
+  const response = await fetch(`${API_BASE_URL}/api/shipments`, {
+    method: "POST",
+    headers: authHeaders(authToken),
+    body: JSON.stringify(data),
+  });
+  console.log(data);
+  console.log(response);
+  if (!response.ok) throw new Error("Failed to create shipment");
   return response.json();
 }

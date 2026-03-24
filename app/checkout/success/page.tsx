@@ -7,6 +7,7 @@ import { CheckCircle2, ShoppingBag, Package } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Spinner } from "@/components/ui/spinner"; 
+import { Header } from "@/components/header";
 
 function SuccessContent() {
   const searchParams = useSearchParams();
@@ -37,14 +38,14 @@ function SuccessContent() {
           </div>
         ) : (
           <p className="text-sm text-muted-foreground">
-            We've sent a confirmation email with your order details.
+            You can always check your order's status.
           </p>
         )}
       </CardContent>
 
       <CardFooter className="flex flex-col gap-4 pt-8">
         <Button asChild className="w-full" size="lg">
-          <Link href="/user/orders">
+          <Link href="/my-orders">
             <Package className="mr-2 h-5 w-5" />
             View Your Orders
           </Link>
@@ -62,6 +63,8 @@ function SuccessContent() {
 
 export default function CheckoutSuccessPage() {
   return (
+  <div className="min-h-screen flex flex-col">
+    <Header />
     <div className="flex min-h-[70vh] flex-col items-center justify-center px-4 py-12">
       <Suspense fallback={
         <div className="flex flex-col items-center gap-4">
@@ -72,5 +75,6 @@ export default function CheckoutSuccessPage() {
         <SuccessContent />
       </Suspense>
     </div>
+  </div>
   );
 }

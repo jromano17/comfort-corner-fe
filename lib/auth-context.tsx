@@ -34,7 +34,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [isLoading, setIsLoading] = useState(true);
   const router = useRouter();
 
-  // Initialize auth state from storage
   useEffect(() => {
     const storedToken = sessionStorage.getItem(TOKEN_KEY);
     const storedUser = sessionStorage.getItem(USER_KEY);
@@ -54,17 +53,19 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setUser(response.user);
     sessionStorage.setItem(TOKEN_KEY, response.accessToken);
     sessionStorage.setItem(USER_KEY, JSON.stringify(response.user));
-    router.push("/admin");
+    if (response.user.role == "ROLE_ADMIN") router.push("/admin");
+    else router.push("/");
   }, [router]);
 
   const register = useCallback(async (data: RegisterRequest) => {
     console.log(data)
     const response = await apiRegister(data);
-    setToken(response.accessToken);
+    setToken(response.accessToken);   
     setUser(response.user);
     sessionStorage.setItem(TOKEN_KEY, response.accessToken);
-    //sessionStorage.setItem(USER_KEY, JSON.stringify(response.user));
-    router.push("/");
+    sessionStorage.setItem(USER_KEY, JSON.stringify(response.user));
+    if (response.user.role == "ROLE_ADMIN") router.push("/admin");
+    else router.push("/");
   }, [router]);
 
   const logout = useCallback(async () => {
@@ -102,12 +103,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 }
 
 export function useAuth() {
-  
-  /*
-    console.log("auth context");
-    console.log(user);
-    console.log(token);
-    console.log(isLoading);*/
   const context = useContext(AuthContext);
   console.log(context)
   if (context === undefined) {

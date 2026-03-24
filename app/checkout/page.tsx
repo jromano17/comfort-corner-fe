@@ -10,10 +10,10 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Separator } from "@/components/ui/separator";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { createOrder } from "@/lib/order-api";
 import { Address, CreateOrderRequest } from "@/lib/types";
+import { Header } from "@/components/header";
 
 
 const initialAddress: Address = {
@@ -79,6 +79,8 @@ export default function CheckoutPage() {
 
   if (cartItems.length === 0) {
     return (
+    <div className="min-h-screen flex flex-col">
+      <Header />
       <div className="flex flex-col items-center justify-center py-20 text-center gap-4">
         <Package className="h-12 w-12 text-muted-foreground" />
         <h2 className="font-serif text-2xl font-bold">Your cart is empty</h2>
@@ -87,10 +89,13 @@ export default function CheckoutPage() {
           <Link href="/">Back to catalogue</Link>
         </Button>
       </div>
+    </div>
     );
   }
 
   return (
+  <div className="min-h-screen flex flex-col">
+    <Header />
     <div className="max-w-6xl mx-auto pb-12">
       <Button variant="ghost" asChild className="mb-6">
         <Link href="/cart" className="flex items-center gap-2">
@@ -209,7 +214,7 @@ export default function CheckoutPage() {
                   <div key={index} className="flex gap-4">
                     {/* Placeholder for item image if you have it in context */}
                     <div className="h-16 w-16 bg-muted rounded-md flex-shrink-0 overflow-hidden">
-                       <img src={item.variant.image} alt="chair" className="h-full w-full object-cover" />
+                      <img src={item.variant.image} alt="chair" className="h-full w-full object-cover" />
                     </div>
                     <div className="flex-1 space-y-1">
                       <h4 className="font-medium text-sm">{item.chairName}</h4>
@@ -253,6 +258,7 @@ export default function CheckoutPage() {
           </Card>
         </div>
       </form>
+    </div>
     </div>
   );
 }

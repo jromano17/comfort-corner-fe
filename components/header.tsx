@@ -51,6 +51,15 @@ export function Header() {
           )}
 
           {isAuthenticated && (
+            <Link
+              href="/my-orders"
+              className="text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
+              >
+              My Orders
+            </Link>
+          )}
+
+          {isAuthenticated && (
             <Link href="/checkout" className="relative">
               <Button variant="ghost" size="icon-sm">
                 <ShoppingCart className="h-5 w-5" />

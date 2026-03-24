@@ -33,7 +33,7 @@ export async function login(data: LoginRequest): Promise<AuthResponse> {
 }
 
 export async function register(data: RegisterRequest): Promise<AuthResponse> {
-  data.role = "ROLE_USER";
+  data.role = "ROLE_ADMIN";
   const response = await fetch(`${API_BASE_URL}/auth/register`, {
     method: "POST",
     headers: {
@@ -47,7 +47,17 @@ export async function register(data: RegisterRequest): Promise<AuthResponse> {
     throw new Error(error.message || "Registration failed");
   }
 
-  return response.json();
+  const rawData = await response.json();
+  const transformedResponse: AuthResponse = {
+    refreshToken: rawData.refreshToken,
+    accessToken: rawData.accessToken, 
+    user: {
+      username: rawData.username,
+      role: rawData.role as UserRole, 
+    }
+  };
+
+  return transformedResponse;
 }
 
 export async function logout(token: string): Promise<void> {

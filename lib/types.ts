@@ -189,13 +189,24 @@ export interface OrderDetail {
   shipment: Shipment;
 }
 export interface Shipment{
-  
     id : number;
     orderId : number;
     trackingNumber : string;
     status : ShipmentStatus;
     estimatedDeliveryDate : string;
     createDate : string;
+}
+export interface ShipmentFormData{
+    orderId? : number;
+    trackingNumber : string;
+    status : string;
+    estimatedDeliveryDate : Date | undefined;
+}
+export interface CreateShipment{
+    orderId? : number;
+    trackingNumber : string;
+    status : string;
+    estimatedDeliveryDate : string | null;
 }
 export enum ShipmentStatus {
     PREPARING = "PREPARING",
