@@ -61,7 +61,6 @@ import { Field, FieldGroup, FieldLabel } from "@/components/ui/field";
 export default function AdminChairDetailPage() {
   const params = useParams();
   const router = useRouter();
-  const { token } = useAuth();
   const chairId = Number(params.id);
 
   const { data: chair, isLoading: chairLoading } = useSWR(
@@ -97,7 +96,7 @@ export default function AdminChairDetailPage() {
   const [showDimensionDialog, setShowDimensionDialog] = useState(false);
 
   const [newMaterial, setNewMaterial] = useState({ name: "", description: "" });
-  const [newColor, setNewColor] = useState({ name: "", hex: "#000000" });
+  const [newColor, setNewColor] = useState({ name: "", hexCode: "#000000" });
   const [newDimension, setNewDimension] = useState({
     name: "",
     width: "",
@@ -117,7 +116,6 @@ export default function AdminChairDetailPage() {
     setError("");
 
     try {
-      // Create the variant first
       const request: CreateChairVariantRequest = {
         chairId,
         materialId: Number(variantForm.materialId),
@@ -127,12 +125,16 @@ export default function AdminChairDetailPage() {
         stockQuantity: Number(variantForm.stockQuantity),
       };
 
-      const variant = await createChairVariant(request, token || undefined);
+      const variant = await createChairVariant(request);
       
       // Then upload the image for this variant
-      await uploadVariantImage(variant.id, variantImage, token || undefined);
+      console.log(variantImage);
+      await uploadVariantImage(variant.id, variantImage);
       
       mutate(`admin-chair-variants-${chairId}`);
+
+      if (variants != undefined)
+      console.log(variants[0].chairId + " " + variants[0].imageUrl);
       setIsAddingVariant(false);
       setVariantForm({
         materialId: "",
@@ -153,7 +155,7 @@ export default function AdminChairDetailPage() {
     if (!confirm("Are you sure you want to delete this variant?")) return;
 
     try {
-      await deleteChairVariant(variantId, token || undefined);
+      await deleteChairVariant(variantId);
       mutate(`admin-chair-variants-${chairId}`);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Failed to delete variant");
@@ -167,7 +169,7 @@ export default function AdminChairDetailPage() {
     setIsUploadingImage(true);
     try {
       for (const file of Array.from(files)) {
-        await uploadChairImage(chairId, file, token || undefined);
+        await uploadChairImage(chairId, file);
       }
       mutate(`admin-chair-${chairId}`);
     } catch (err) {
@@ -179,7 +181,7 @@ export default function AdminChairDetailPage() {
 
   const handleCreateMaterial = async () => {
     try {
-      await createMaterial(newMaterial, token || undefined);
+      await createMaterial(newMaterial);
       mutate("admin-materials");
       setShowMaterialDialog(false);
       setNewMaterial({ name: "", description: "" });
@@ -190,10 +192,10 @@ export default function AdminChairDetailPage() {
 
   const handleCreateColor = async () => {
     try {
-      await createColorOption(newColor, token || undefined);
+      await createColorOption(newColor);
       mutate("admin-colors");
       setShowColorDialog(false);
-      setNewColor({ name: "", hex: "#000000" });
+      setNewColor({ name: "", hexCode: "#000000" });
     } catch (err) {
       setError(err instanceof Error ? err.message : "Failed to create color");
     }
@@ -207,7 +209,7 @@ export default function AdminChairDetailPage() {
         height: Number(newDimension.height),
         depth: Number(newDimension.depth),
         weightCapacity: Number(newDimension.weightCapacity),
-      }, token || undefined);
+      });
       mutate("admin-dimensions");
       setShowDimensionDialog(false);
       setNewDimension({ name: "", width: "", height: "", depth: "", weightCapacity: "" });
@@ -311,9 +313,9 @@ export default function AdminChairDetailPage() {
           </div>
         </CardHeader>
         <CardContent>
-          {chair.gallery && chair.gallery.length > 0 ? (
+          {chair.galleryImageUrls && chair.galleryImageUrls.length > 0 ? (
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-              {chair.gallery.map((url, index) => (
+              {chair.galleryImageUrls.map((url, index) => (
                 <div key={index} className="relative aspect-square rounded-lg overflow-hidden border">
                   <Image src={url} alt={`${chair.name} ${index + 1}`} fill className="object-cover" />
                 </div>
@@ -356,7 +358,7 @@ export default function AdminChairDetailPage() {
                   <TableRow key={variant.id}>
                     <TableCell>
                       <div className="relative h-12 w-12 rounded overflow-hidden">
-                        <Image src={variant.image} alt="" fill className="object-cover" />
+                        <Image src={variant.imageUrl} alt="" fill className="object-cover" />
                       </div>
                     </TableCell>
                     <TableCell>{variant.material.name}</TableCell>
@@ -364,7 +366,7 @@ export default function AdminChairDetailPage() {
                       <div className="flex items-center gap-2">
                         <span
                           className="h-4 w-4 rounded-full border"
-                          style={{ backgroundColor: variant.colorOption.hex }}
+                          style={{ backgroundColor: variant.colorOption.hexCode }}
                         />
                         {variant.colorOption.name}
                       </div>
@@ -445,7 +447,7 @@ export default function AdminChairDetailPage() {
                       {colorOptions?.map((c) => (
                         <SelectItem key={c.id} value={String(c.id)}>
                           <div className="flex items-center gap-2">
-                            <span className="h-3 w-3 rounded-full border" style={{ backgroundColor: c.hex }} />
+                            <span className="h-3 w-3 rounded-full border" style={{ backgroundColor: c.hexCode }} />
                             {c.name}
                           </div>
                         </SelectItem>
@@ -581,13 +583,13 @@ export default function AdminChairDetailPage() {
               <div className="flex gap-2">
                 <Input
                   type="color"
-                  value={newColor.hex}
-                  onChange={(e) => setNewColor({ ...newColor, hex: e.target.value })}
+                  value={newColor.hexCode}
+                  onChange={(e) => setNewColor({ ...newColor, hexCode: e.target.value })}
                   className="w-16 h-10 p-1"
                 />
                 <Input
-                  value={newColor.hex}
-                  onChange={(e) => setNewColor({ ...newColor, hex: e.target.value })}
+                  value={newColor.hexCode}
+                  onChange={(e) => setNewColor({ ...newColor, hexCode: e.target.value })}
                   placeholder="#000000"
                   className="flex-1"
                 />

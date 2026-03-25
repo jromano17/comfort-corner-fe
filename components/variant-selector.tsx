@@ -104,7 +104,7 @@ export function VariantSelector({
             >
               <span
                 className="h-4 w-4 rounded-full border border-foreground/20"
-                style={{ backgroundColor: color.hex }}
+                style={{ backgroundColor: color.hexCode }}
                 aria-hidden="true"
               />
               {color.name}

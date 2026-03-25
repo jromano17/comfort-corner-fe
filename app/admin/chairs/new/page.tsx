@@ -70,7 +70,7 @@ export default function NewChairPage() {
   );
   const { data: suppliers, mutate: mutateSuppliers } = useSWR(
     token ? ["suppliers", token] : null,
-    () => fetchSuppliers(token!)
+    () => fetchSuppliers()
   );
 
   const handleImageSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -98,8 +98,7 @@ export default function NewChairPage() {
     setCreatingCategory(true);
     try {
       const category = await createCategory(
-        { name: newCategoryName, description: newCategoryDesc },
-        token
+        { name: newCategoryName, description: newCategoryDesc }
       );
       mutateCategories();
       setCategoryId(category.id.toString());
@@ -122,9 +121,7 @@ export default function NewChairPage() {
           name: newSupplierName,
           contactEmail: newSupplierEmail,
           country: newSupplierCountry,
-        },
-        token
-      );
+        });
       mutateSuppliers();
       setSupplierId(supplier.id.toString());
       setShowNewSupplier(false);
@@ -153,12 +150,10 @@ export default function NewChairPage() {
           basePrice: parseFloat(basePrice),
           categoryId: parseInt(categoryId),
           supplierId: parseInt(supplierId),
-        },
-        token
-      );
+        }      );
 
       if (imageFiles.length > 0) {
-        await uploadChairImages(chair.id, imageFiles, token);
+        await uploadChairImages(chair.id, imageFiles);
       }
 
       router.push(`/admin/chairs/${chair.id}`);

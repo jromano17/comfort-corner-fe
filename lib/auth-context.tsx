@@ -27,7 +27,7 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 const TOKEN_KEY = "comfort_corner_token";
 const USER_KEY = "comfort_corner_user";
-
+const REFRESH_KEY = "refreshToken";
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [token, setToken] = useState<string | null>(null);
@@ -37,7 +37,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     const storedToken = sessionStorage.getItem(TOKEN_KEY);
     const storedUser = sessionStorage.getItem(USER_KEY);
-
+    const storedRefresh = sessionStorage.getItem(REFRESH_KEY);
     if (storedToken && storedUser) {
       setToken(storedToken);
       setUser(JSON.parse(storedUser));
@@ -53,6 +53,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setUser(response.user);
     sessionStorage.setItem(TOKEN_KEY, response.accessToken);
     sessionStorage.setItem(USER_KEY, JSON.stringify(response.user));
+    sessionStorage.setItem(REFRESH_KEY, response.refreshToken);
     if (response.user.role == "ROLE_ADMIN") router.push("/admin");
     else router.push("/");
   }, [router]);
@@ -64,6 +65,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setUser(response.user);
     sessionStorage.setItem(TOKEN_KEY, response.accessToken);
     sessionStorage.setItem(USER_KEY, JSON.stringify(response.user));
+    sessionStorage.setItem(REFRESH_KEY, response.refreshToken);
     if (response.user.role == "ROLE_ADMIN") router.push("/admin");
     else router.push("/");
   }, [router]);
@@ -80,6 +82,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       setUser(null);
       sessionStorage.removeItem(TOKEN_KEY);
       sessionStorage.removeItem(USER_KEY);
+      sessionStorage.removeItem(REFRESH_KEY);
       router.push("/");
     }
   }, [token, router]);

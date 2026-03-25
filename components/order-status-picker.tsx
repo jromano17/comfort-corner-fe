@@ -1,12 +1,11 @@
-import { useState } from "react";
-import { changeOrderStatus, createIncomeRecord } from "@/lib/admin-api";
+import { useEffect, useState } from "react";
+import { changeOrderStatus, createIncomeRecord, fetchOrderById } from "@/lib/admin-api";
 import { CreateIncomeRecord, OrderStatus } from "@/lib/types"; 
-import { useAuth } from "@/lib/auth-context";
 import { Button } from "@/components/ui/button";
-import { Plus } from "lucide-react";
 import { Field, FieldGroup, FieldLabel } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import { Spinner } from "@/components/ui/spinner";
+import toast, { Toaster } from "react-hot-toast";
 import {
   Dialog,
   DialogContent,
@@ -29,7 +28,7 @@ export function OrderStatusPicker({ orderId, currentStatus, onSuccess }: OrderSt
   const [loading, setLoading] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isIncomeDialogOpen, setIsIncomeDialogOpen] = useState(false);
-  const { token } = useAuth();
+  const [isPolling, setIsPolling] = useState(false); 
 
   const [formData, setFormData] = useState<CreateIncomeRecord>({
     orderId: orderId,
@@ -39,9 +38,32 @@ export function OrderStatusPicker({ orderId, currentStatus, onSuccess }: OrderSt
   });
 
   const handleUpdate = async (newStatus: string) => {
-    setLoading(true);
+ setLoading(true);
     try {
-      await changeOrderStatus(orderId, newStatus as OrderStatus, undefined, token || undefined);
+      await changeOrderStatus(orderId, newStatus as OrderStatus, undefined);
+      
+      if (newStatus === OrderStatus.APPROVED) { 
+        setIsPolling(true);
+        toast.loading(`Processing Order #${orderId}...`, { id: `toast-${orderId}` });
+      } else {
+        setStatus(newStatus); 
+        onSuccess(); 
+        toast.success("Status updated successfully!");
+        
+        if (newStatus === OrderStatus.DELIVERED) {
+          setIsIncomeDialogOpen(true);
+        }
+      }
+    } catch (error) {
+      console.error(error);
+      toast.error("Failed to update status.");
+      setStatus(currentStatus); 
+    } finally {
+      setLoading(false);
+    }
+
+
+/*ovako je bilo odmah poslije awaita changeorderstatus:
       setStatus(newStatus); 
       onSuccess(); 
       if (newStatus === OrderStatus.DELIVERED) {
@@ -55,12 +77,44 @@ export function OrderStatusPicker({ orderId, currentStatus, onSuccess }: OrderSt
       setLoading(false);
 
     }
+*/
   };
+
+  useEffect(() => {
+    let pollInterval: NodeJS.Timeout;
+
+    if (isPolling) {
+      pollInterval = setInterval(async () => {
+        try {
+          const updatedOrder = await fetchOrderById(orderId.toString()); 
+          if (updatedOrder.currentStatus === "CREATED") {
+            setIsPolling(false);
+            setStatus(OrderStatus.CREATED);
+            onSuccess(); 
+            toast.success("Stock reduced! Order approved.", { id: `toast-${orderId}` });
+          } 
+          else if (updatedOrder.currentStatus === "CANCELLED") {
+            setIsPolling(false);
+            setStatus(OrderStatus.CANCELLED);
+            onSuccess(); 
+            toast.error("Failed: Insufficient stock.", { id: `toast-${orderId}` });
+          }
+
+        } catch (error) {
+          console.error("Polling error", error);
+        }
+      }, 2000); 
+    }
+
+    return () => clearInterval(pollInterval);
+  }, [isPolling, orderId, onSuccess]);
+
+  
  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
     try {
-      await createIncomeRecord(formData, token || undefined);
+      await createIncomeRecord(formData);
       setIsIncomeDialogOpen(false);
       setFormData({ orderId: 0, incomeAmount: 0, tax: 0, cost:0 });
     } catch (err) {
@@ -82,7 +136,7 @@ export function OrderStatusPicker({ orderId, currentStatus, onSuccess }: OrderSt
           <option key={s} value={s}>{s}</option>
         ))}
       </select>
-
+<Toaster />
       <Dialog open={isIncomeDialogOpen} onOpenChange={setIsIncomeDialogOpen}>
        <DialogContent>
               <form onSubmit={handleSubmit}>

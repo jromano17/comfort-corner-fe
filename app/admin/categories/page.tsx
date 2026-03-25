@@ -35,7 +35,6 @@ import { Field, FieldGroup, FieldLabel } from "@/components/ui/field";
 import { Textarea } from "@/components/ui/textarea";
 
 export default function AdminCategoriesPage() {
-  const { token } = useAuth();
   const { data: categories, isLoading } = useSWR("admin-categories", fetchCategories);
   const [showDialog, setShowDialog] = useState(false);
   const [newCategory, setNewCategory] = useState({ name: "", description: "" });
@@ -48,7 +47,7 @@ export default function AdminCategoriesPage() {
     setError("");
 
     try {
-      await createCategory(newCategory, token || undefined);
+      await createCategory(newCategory);
       mutate("admin-categories");
       setShowDialog(false);
       setNewCategory({ name: "", description: "" });
@@ -63,7 +62,7 @@ export default function AdminCategoriesPage() {
     if (!confirm("Are you sure you want to delete this category?")) return;
 
     try {
-      await deleteCategory(id, token || undefined);
+      await deleteCategory(id);
       mutate("admin-categories");
     } catch (err) {
       setError(err instanceof Error ? err.message : "Failed to delete category");

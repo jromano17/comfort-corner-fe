@@ -27,7 +27,7 @@ export default function OrdersPage() {
   const { token } = useAuth();
   const { data: incomes, error, isLoading } = useSWR(
     token ? ["admin-incomes", token] : null,
-    ([_, tkn]) => fetchIncomes(tkn), 
+    ([_, tkn]) => fetchIncomes(), 
     { keepPreviousData: true } 
   );
 

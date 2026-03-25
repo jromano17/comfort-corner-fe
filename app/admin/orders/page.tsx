@@ -30,8 +30,8 @@ export default function OrdersPage() {
 
   const { data: paginatedData, error, isLoading } = useSWR(
     token ? ["admin-orders", pageIndex, token] : null,
-    ([_, page, tkn]) => fetchOrderss(page, 10, tkn), // 10 is the page size
-    { keepPreviousData: true } // Keeps the old table visible while the next page loads
+    ([_, page, tkn]) => fetchOrderss(page, 10), 
+    { keepPreviousData: true } //
   );
 
   if (isLoading && !paginatedData) {

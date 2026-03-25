@@ -33,7 +33,7 @@ export default function OrderDetailPage() {
 
   const { data: order, error, isLoading, mutate } = useSWR(
     token && params.id ? ["user-order", params.id, token] : null,
-    ([_, id, tkn]) => fetchOrderById(id, tkn)
+    ([_, id, tkn]) => fetchOrderById(id)
   );
 
   if (isLoading) {

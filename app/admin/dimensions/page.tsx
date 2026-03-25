@@ -36,7 +36,6 @@ import {
 import { Field, FieldGroup, FieldLabel } from "@/components/ui/field";
 
 export default function DimensionsPage() {
-  const { token } = useAuth();
   const { data: dimensions, error, isLoading, mutate } = useSWR("admin-dimensions", fetchDimensions);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -52,7 +51,7 @@ export default function DimensionsPage() {
     e.preventDefault();
     setIsSubmitting(true);
     try {
-      await createDimension(formData, token || undefined);
+      await createDimension(formData);
       mutate();
       setIsDialogOpen(false);
       setFormData({ name: "", width: 0, height: 0, depth: 0, weightCapacity: 0 });

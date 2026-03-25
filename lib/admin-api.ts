@@ -1,3 +1,4 @@
+import { fetchWithAuth } from "./auth-api";
 import {
   Category,
   Supplier,
@@ -32,7 +33,6 @@ function authHeaders(token: string): HeadersInit {
   };
 }
 
-// Helper to get token from sessionStorage (client-side)
 function getStoredToken(): string | null {
   if (typeof window === "undefined") return null;
   //return sessionStorage.getItem("auth_token");
@@ -53,70 +53,50 @@ export async function fetchCategories(): Promise<Category[]> {
 }
 
 export async function createCategory(
-  data: CreateCategoryRequest,
-  token?: string
-): Promise<Category> {
-  const authToken = token || getRequiredToken();
-  const response = await fetch(`${API_BASE_URL}/api/categories`, {
+  data: CreateCategoryRequest): Promise<Category> {
+  const response = await fetchWithAuth(`${API_BASE_URL}/api/categories`, {
     method: "POST",
-    headers: authHeaders(authToken),
     body: JSON.stringify(data),
   });
   if (!response.ok) throw new Error("Failed to create category");
   return response.json();
 }
 
-export async function deleteCategory(id: number, token?: string): Promise<void> {
-  const authToken = token || getRequiredToken();
-  const response = await fetch(`${API_BASE_URL}/api/categories/${id}`, {
+export async function deleteCategory(id: number): Promise<void> {
+  const response = await fetchWithAuth(`${API_BASE_URL}/api/categories/${id}`, {
     method: "DELETE",
-    headers: authHeaders(authToken),
   });
   if (!response.ok) throw new Error("Failed to delete category");
 }
 
 // Suppliers
-export async function fetchSuppliers(token?: string): Promise<Supplier[]> {
-  const authToken = token || getRequiredToken();
-  const response = await fetch(`${API_BASE_URL}/api/suppliers`, {
-    headers: authHeaders(authToken),
-  });
+export async function fetchSuppliers(): Promise<Supplier[]> {
+  const response = await fetchWithAuth(`${API_BASE_URL}/api/suppliers`, {});
   if (!response.ok) throw new Error("Failed to fetch suppliers");
   return response.json();
 }
 
 export async function createSupplier(
-  data: CreateSupplierRequest,
-  token?: string
-): Promise<Supplier> {
-  const authToken = token || getRequiredToken();
-  const response = await fetch(`${API_BASE_URL}/api/suppliers`, {
+  data: CreateSupplierRequest): Promise<Supplier> {
+  const response = await fetchWithAuth(`${API_BASE_URL}/api/suppliers`, {
     method: "POST",
-    headers: authHeaders(authToken),
     body: JSON.stringify(data),
   });
   if (!response.ok) throw new Error("Failed to create supplier");
   return response.json();
 }
 
-export async function deleteSupplier(id: number, token?: string): Promise<void> {
-  const authToken = token || getRequiredToken();
-  const response = await fetch(`${API_BASE_URL}/api/suppliers/${id}`, {
+export async function deleteSupplier(id: number): Promise<void> {
+  const response = await fetchWithAuth(`${API_BASE_URL}/api/suppliers/${id}`, {
     method: "DELETE",
-    headers: authHeaders(authToken),
   });
   if (!response.ok) throw new Error("Failed to delete supplier");
 }
 
 // Chairs
-export async function createChair(
-  data: CreateChairRequest,
-  token?: string
-): Promise<Chair> {
-  const authToken = token || getRequiredToken();
-  const response = await fetch(`${API_BASE_URL}/api/chairs`, {
+export async function createChair(data: CreateChairRequest): Promise<Chair> {
+  const response = await fetchWithAuth(`${API_BASE_URL}/api/chairs`, {
     method: "POST",
-    headers: authHeaders(authToken),
     body: JSON.stringify(data),
   });
   if (!response.ok) throw new Error("Failed to create chair");
@@ -125,52 +105,38 @@ export async function createChair(
 
 export async function uploadChairImages(
   chairId: number,
-  files: File[],
-  token?: string
+  files: File[]
 ): Promise<string[]> {
-  const authToken = token || getRequiredToken();
   const formData = new FormData();
   files.forEach((file) => {
     formData.append("images", file);
   });
 
-  const response = await fetch(`${API_BASE_URL}/api/chairs/${chairId}/images`, {
+  const response = await fetchWithAuth(`${API_BASE_URL}/api/chairs/${chairId}/images`, {
     method: "POST",
-    headers: {
-      Authorization: `Bearer ${authToken}`,
-    },
     body: formData,
   });
   if (!response.ok) throw new Error("Failed to upload images");
   return response.json();
 }
 
-// Upload a single image to chair gallery
 export async function uploadChairImage(
   chairId: number,
-  file: File,
-  token?: string
-): Promise<string> {
-  const authToken = token || getRequiredToken();
+  file: File): Promise<string> {
   const formData = new FormData();
   formData.append("file", file);
 
-  const response = await fetch(`${API_BASE_URL}/api/chairs/${chairId}/gallery`, {
+  const response = await fetchWithAuth(`${API_BASE_URL}/api/chairs/${chairId}/gallery`, {
     method: "POST",
-    headers: {
-      Authorization: `Bearer ${authToken}`,
-    },
     body: formData,
   });
   if (!response.ok) throw new Error("Failed to upload image");
   return response.text();
 }
 
-export async function deleteChair(id: number, token?: string): Promise<void> {
-  const authToken = token || getRequiredToken();
-  const response = await fetch(`${API_BASE_URL}/api/chairs/${id}`, {
+export async function deleteChair(id: number): Promise<void> {
+  const response = await fetchWithAuth(`${API_BASE_URL}/api/chairs/${id}`, {
     method: "DELETE",
-    headers: authHeaders(authToken),
   });
   if (!response.ok) throw new Error("Failed to delete chair");
 }
@@ -183,13 +149,9 @@ export async function fetchMaterials(): Promise<Material[]> {
 }
 
 export async function createMaterial(
-  data: CreateMaterialRequest,
-  token?: string
-): Promise<Material> {
-  const authToken = token || getRequiredToken();
-  const response = await fetch(`${API_BASE_URL}/api/materials`, {
+  data: CreateMaterialRequest): Promise<Material> {
+  const response = await fetchWithAuth(`${API_BASE_URL}/api/materials`, {
     method: "POST",
-    headers: authHeaders(authToken),
     body: JSON.stringify(data),
   });
   if (!response.ok) throw new Error("Failed to create material");
@@ -204,13 +166,9 @@ export async function fetchColorOptions(): Promise<ColorOption[]> {
 }
 
 export async function createColorOption(
-  data: CreateColorOptionRequest,
-  token?: string
-): Promise<ColorOption> {
-  const authToken = token || getRequiredToken();
-  const response = await fetch(`${API_BASE_URL}/api/color-options`, {
+  data: CreateColorOptionRequest): Promise<ColorOption> {
+  const response = await fetchWithAuth(`${API_BASE_URL}/api/color-options`, {
     method: "POST",
-    headers: authHeaders(authToken),
     body: JSON.stringify(data),
   });
   if (!response.ok) throw new Error("Failed to create color option");
@@ -225,13 +183,9 @@ export async function fetchDimensions(): Promise<Dimension[]> {
 }
 
 export async function createDimension(
-  data: CreateDimensionRequest,
-  token?: string
-): Promise<Dimension> {
-  const authToken = token || getRequiredToken();
-  const response = await fetch(`${API_BASE_URL}/api/dimensions`, {
+  data: CreateDimensionRequest): Promise<Dimension> {
+  const response = await fetchWithAuth(`${API_BASE_URL}/api/dimensions`, {
     method: "POST",
-    headers: authHeaders(authToken),
     body: JSON.stringify(data),
   });
   if (!response.ok) throw new Error("Failed to create dimension");
@@ -240,13 +194,11 @@ export async function createDimension(
 
 // Chair Variants
 export async function createChairVariant(
-  data: CreateChairVariantRequest,
-  token?: string
-): Promise<ChairVariant> {
-  const authToken = token || getRequiredToken();
-  const response = await fetch(`${API_BASE_URL}/api/chair-variants`, {
+  data: CreateChairVariantRequest): Promise<ChairVariant> {
+  console.log("admin api1");
+  console.log(data);
+  const response = await fetchWithAuth(`${API_BASE_URL}/api/chair-variants`, {
     method: "POST",
-    headers: authHeaders(authToken),
     body: JSON.stringify(data),
   });
   console.log("admin api");
@@ -258,49 +210,33 @@ export async function createChairVariant(
 
 export async function uploadVariantImage(
   variantId: number,
-  file: File,
-  token?: string
-): Promise<string> {
-  const authToken = token || getRequiredToken();
+  file: File): Promise<string> {
   const formData = new FormData();
   formData.append("file", file);
-
-  const response = await fetch(
+  const response = await fetchWithAuth(
     `${API_BASE_URL}/api/chair-variants/${variantId}/image`,
     {
       method: "POST",
-      headers: {
-        Authorization: `Bearer ${authToken}`,
-      },
       body: formData,
     }
   );
-  console.log("admin api");
-  console.log(response);
-  console.log(formData);
   if (!response.ok) throw new Error("Failed to upload variant image");
   return response.text();
 }
 
 export async function deleteChairVariant(
-  id: number,
-  token?: string
-): Promise<void> {
-  const authToken = token || getRequiredToken();
-  const response = await fetch(`${API_BASE_URL}/api/chair-variants/${id}`, {
+  id: number): Promise<void> {
+  const response = await fetchWithAuth(`${API_BASE_URL}/api/chair-variants/${id}`, {
     method: "DELETE",
-    headers: authHeaders(authToken),
   });
   if (!response.ok) throw new Error("Failed to delete chair variant");
 }
 
 
 //all orders
-export async function fetchOrders(token?: string): Promise<Order[]> {
-  const authToken = token || getRequiredToken();
-  const response = await fetch(`${API_BASE_URL}/api/orders`, {
+export async function fetchOrders(): Promise<Order[]> {
+  const response = await fetchWithAuth(`${API_BASE_URL}/api/orders`, {
     method: "GET",
-    headers: authHeaders(authToken)
   });
   if (!response.ok) throw new Error("Failed to fetch orders");
 
@@ -308,16 +244,10 @@ export async function fetchOrders(token?: string): Promise<Order[]> {
   return data.content;
 }
 
-export async function fetchIncomes(
-  token?: string
-): Promise<Income[]> {
-  const authToken = token || getRequiredToken();
-
-  const response = await fetch(`${API_BASE_URL}/api/income`, {
+export async function fetchIncomes(): Promise<Income[]> {
+  const response = await fetchWithAuth(`${API_BASE_URL}/api/income`, {
     method: "GET",
-    headers: authHeaders(authToken)
   });
-  
   if (!response.ok) throw new Error("Failed to fetch incomes");
   return response.json();
 }
@@ -325,10 +255,7 @@ export async function fetchIncomes(
 
 export async function fetchOrderss(
   page: number = 0, 
-  size: number = 10, 
-  token?: string
-): Promise<PaginatedOrders> {
-  const authToken = token || getRequiredToken();
+  size: number = 10): Promise<PaginatedOrders> {
   
   const params = new URLSearchParams({
     page: page.toString(),
@@ -336,9 +263,8 @@ export async function fetchOrderss(
     sort: "createdAt,desc" 
   });
 
-  const response = await fetch(`${API_BASE_URL}/api/orders?${params.toString()}`, {
+  const response = await fetchWithAuth(`${API_BASE_URL}/api/orders?${params.toString()}`, {
     method: "GET",
-    headers: authHeaders(authToken)
   });
   
   if (!response.ok) throw new Error("Failed to fetch orders");
@@ -347,31 +273,27 @@ export async function fetchOrderss(
   return data; 
 }
 
-export async function fetchOrderById(orderId: string,token?: string): Promise<OrderDetail> {
-  const authToken = token || getRequiredToken();
-  const response = await fetch(`${API_BASE_URL}/api/orders/${orderId}`, {
+export async function fetchOrderById(orderId: string): Promise<OrderDetail> {
+  const response = await fetchWithAuth(`${API_BASE_URL}/api/orders/${orderId}`, {
     method: "GET",
-    headers: authHeaders(authToken)
   });
   if (!response.ok) throw new Error("Failed to fetch order with ID:" + orderId);
-  let s = response.json();
-  console.log(s);
-return s;
+  let s = await response.json();
+  return s;
 }
+
+
+
 export async function changeOrderStatus(
   orderId: number, 
   newStatus: OrderStatus, 
-  changedBy?: number,
-  token?: string
-): Promise<Order> {
+  changedBy?: number): Promise<Order> {
   const params = new URLSearchParams({newStatus: newStatus,});
   if (changedBy) {
     params.append("changedBy", changedBy.toString());
   }
-  const authToken = token || getRequiredToken();
-  const response = await fetch(`${API_BASE_URL}/api/orders/${orderId}/status?${params.toString()}`, {
+  const response = await fetchWithAuth(`${API_BASE_URL}/api/orders/${orderId}/status?${params.toString()}`, {
     method: "PATCH",
-    headers: authHeaders(authToken)
   });
   
   if (!response.ok) {
@@ -382,13 +304,9 @@ export async function changeOrderStatus(
   return response.json();
 }
 export async function createIncomeRecord(
-  data: CreateIncomeRecord,
-  token?: string
-): Promise<Income> {
-  const authToken = token || getRequiredToken();
-  const response = await fetch(`${API_BASE_URL}/api/income/${data.orderId}`, {
+  data: CreateIncomeRecord): Promise<Income> {
+  const response = await fetchWithAuth(`${API_BASE_URL}/api/income/${data.orderId}`, {
     method: "POST",
-    headers: authHeaders(authToken),
     body: JSON.stringify(data)
   });
   
@@ -403,27 +321,19 @@ export async function createIncomeRecord(
 
 export async function updateShipmentStatus(
   shipmentId: number | undefined,
-  status : string,
-  token?: string
-): Promise<Shipment> {
-  const authToken = token || getRequiredToken();
+  status : string): Promise<Shipment> {
   const params = new URLSearchParams({status: status,});
-  const response = await fetch(`${API_BASE_URL}/api/shipments/${shipmentId}?${params.toString()}`, {
+  const response = await fetchWithAuth(`${API_BASE_URL}/api/shipments/${shipmentId}?${params.toString()}`, {
     method: "PATCH",
-    headers: authHeaders(authToken)
   });
 
   if (!response.ok) throw new Error("Failed to change shipment status");
   return response.json();
 }
 export async function createShipment(
-  data: CreateShipment,
-  token?: string
-): Promise<Shipment> {
-  const authToken = token || getRequiredToken();
-  const response = await fetch(`${API_BASE_URL}/api/shipments`, {
+  data: CreateShipment): Promise<Shipment> {
+  const response = await fetchWithAuth(`${API_BASE_URL}/api/shipments`, {
     method: "POST",
-    headers: authHeaders(authToken),
     body: JSON.stringify(data),
   });
   console.log(data);

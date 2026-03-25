@@ -50,7 +50,7 @@ export interface ChairVariant {
   dimension: Dimension;
   finalPrice: number;
   stockQuantity: number;
-  image: string;
+  imageUrl: string;
 }
 
 export const CATEGORY_NAMES = [

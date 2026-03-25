@@ -61,7 +61,7 @@ export default function OrderDetailPage() {
 
   const { data: order, error, isLoading, mutate } = useSWR(
     token && params.id ? ["admin-order", params.id, token] : null,
-    ([_, id, tkn]) => fetchOrderById(id, tkn)
+    ([_, id, tkn]) => fetchOrderById(id)
   );
     const [formData, setFormData] = useState<ShipmentFormData>({
     orderId : order?.id,

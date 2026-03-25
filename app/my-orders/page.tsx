@@ -31,7 +31,7 @@ export default function OrdersPage() {
 
   const { data: paginatedData, error, isLoading } = useSWR(
     token ? ["user-orders", pageIndex, token] : null,
-    ([_, page, tkn]) => fetchUserOrders(page, 10, tkn), 
+    ([_, page, tkn]) => fetchUserOrders(page, 10), 
     { keepPreviousData: true } 
   );
 

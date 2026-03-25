@@ -67,7 +67,7 @@ export default function CheckoutPage() {
     };
 
     try {
-      const savedOrder = await createOrder(orderDTO, token || undefined);
+      const savedOrder = await createOrder(orderDTO);
       clearCart();
       router.push(`/checkout/success?orderNumber=${savedOrder.orderNumber}`);
     } catch (error) {

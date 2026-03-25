@@ -38,7 +38,7 @@ export default function ChairsListPage() {
     if (!token) return;
     setDeletingId(id);
     try {
-      await deleteChair(id, token);
+      await deleteChair(id);
       mutate();
     } catch (err) {
       console.error("Failed to delete chair:", err);

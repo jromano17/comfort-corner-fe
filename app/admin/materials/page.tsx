@@ -37,7 +37,6 @@ import {
 import { Field, FieldGroup, FieldLabel } from "@/components/ui/field";
 
 export default function MaterialsPage() {
-  const { token } = useAuth();
   const { data: materials, error, isLoading, mutate } = useSWR("admin-materials", fetchMaterials);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -50,7 +49,7 @@ export default function MaterialsPage() {
     e.preventDefault();
     setIsSubmitting(true);
     try {
-      await createMaterial(formData, token || undefined);
+      await createMaterial(formData);
       mutate();
       setIsDialogOpen(false);
       setFormData({ name: "", description: "" });

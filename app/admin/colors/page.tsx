@@ -36,7 +36,6 @@ import {
 import { Field, FieldGroup, FieldLabel } from "@/components/ui/field";
 
 export default function ColorsPage() {
-  const { token } = useAuth();
   const { data: colors, error, isLoading, mutate } = useSWR("admin-colors", fetchColorOptions);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -49,7 +48,7 @@ export default function ColorsPage() {
     e.preventDefault();
     setIsSubmitting(true);
     try {
-      await createColorOption(formData, token || undefined);
+      await createColorOption(formData);
       mutate();
       setIsDialogOpen(false);
       setFormData({ name: "", hexCode: "#000000" });

@@ -58,7 +58,7 @@ export function ChairDetail({ chairId }: ChairDetailProps) {
     if (variants) {
       variants.forEach((variant) => {
         images.push({
-          url: variant.image,
+          url: variant.imageUrl,
           alt: `${chair?.name || "Chair"} - ${variant.material.name} in ${variant.colorOption.name}`,
         });
       });

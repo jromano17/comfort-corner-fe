@@ -37,7 +37,7 @@ export default function AdminSuppliersPage() {
   const { token } = useAuth();
   const { data: suppliers, isLoading } = useSWR(
     token ? "admin-suppliers" : null,
-    () => fetchSuppliers(token!)
+    () => fetchSuppliers()
   );
   const [showDialog, setShowDialog] = useState(false);
   const [newSupplier, setNewSupplier] = useState({ name: "", contactEmail: "", country: "" });
@@ -50,7 +50,7 @@ export default function AdminSuppliersPage() {
     setError("");
 
     try {
-      await createSupplier(newSupplier, token || undefined);
+      await createSupplier(newSupplier);
       mutate("admin-suppliers");
       setShowDialog(false);
       setNewSupplier({ name: "", contactEmail: "", country: "" });
@@ -65,7 +65,7 @@ export default function AdminSuppliersPage() {
     if (!confirm("Are you sure you want to delete this supplier?")) return;
 
     try {
-      await deleteSupplier(id, token || undefined);
+      await deleteSupplier(id);
       mutate("admin-suppliers");
     } catch (err) {
       setError(err instanceof Error ? err.message : "Failed to delete supplier");
