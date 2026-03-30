@@ -14,8 +14,8 @@ export async function createOrder(
   });
 
   if (!response.ok) {
-    const error = await response.text();
-    throw new Error(error || "Failed to create order");
+    const error = await response.json().catch(() => ({}));
+    throw new Error(error.response.data.message || "Failed to create order");
   }
 
   return response.json();

@@ -1,10 +1,11 @@
 import { AuthResponse, LoginRequest, RegisterRequest, UserRole } from "./types";
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "";
+const TOKEN_KEY = "comfort_corner_token";
+const USER_KEY = "comfort_corner_user";
+const REFRESH_KEY = "comfort_corner_refresh_token";
 
 export async function login(data: LoginRequest): Promise<AuthResponse> {
-  console.log("auth api11");
-  console.log(data);
   const response = await fetch(`${API_BASE_URL}/auth/login`, {
     method: "POST",
     headers: {
@@ -12,11 +13,9 @@ export async function login(data: LoginRequest): Promise<AuthResponse> {
     },
     body: JSON.stringify(data),
   });
-  console.log("auth api");
-  console.log(response);
   if (!response.ok) {
     const error = await response.json().catch(() => ({}));
-    throw new Error(error.message || "Login failed");
+    throw new Error(error.response.data.message || "Login failed");
   }
 
   const rawData = await response.json();
@@ -41,10 +40,9 @@ export async function register(data: RegisterRequest): Promise<AuthResponse> {
     },
     body: JSON.stringify(data),
   });
-  console.log(response)
   if (!response.ok) {
     const error = await response.json().catch(() => ({}));
-    throw new Error(error.message || "Registration failed");
+    throw new Error(error.response.data.message || "Registration failed");
   }
 
   const rawData = await response.json();
@@ -71,7 +69,7 @@ export async function logout(token: string): Promise<void> {
 
   if (!response.ok) {
     const error = await response.json().catch(() => ({}));
-    throw new Error(error.message || "Logout failed");
+    throw new Error(error.response.data.message || "Logout failed");
   }
 }
 
@@ -93,8 +91,7 @@ export async function refreshToken(token: string): Promise<AuthResponse> {
 
 async function refreshAccessToken(): Promise<string | null> {
   try {
-    const refreshToken = sessionStorage.getItem("refreshToken");
-    console.log("FIRST REFRESH TOKEN" + refreshToken);
+    const refreshToken = sessionStorage.getItem(REFRESH_KEY);
     if (!refreshToken) throw new Error("No refresh token available");
 
     const response = await fetch(`${API_BASE_URL}/api/auth/refresh-token`, {
@@ -106,23 +103,22 @@ async function refreshAccessToken(): Promise<string | null> {
     if (!response.ok) throw new Error("Refresh token expired or invalid");
 
     const data = await response.json();
-    console.log("SEcond refresh" + data);
-    sessionStorage.setItem("accessToken", data.accessToken);
+    sessionStorage.setItem(TOKEN_KEY, data.accessToken);
     if (data.refreshToken) {
-      sessionStorage.setItem("refreshToken", data.refreshToken);
+      sessionStorage.setItem(REFRESH_KEY, data.refreshToken);
     }
 
     return data.accessToken;
   } catch (error) {
-    sessionStorage.removeItem("accessToken");
-    sessionStorage.removeItem("refreshToken");
+    sessionStorage.removeItem(TOKEN_KEY);
+    sessionStorage.removeItem(REFRESH_KEY);
     window.location.href = "/login"; 
     return null;
   }
 }
 function getStoredToken(): string | null {
   if (typeof window === "undefined") return null;
-  return sessionStorage.getItem("comfort_corner_token");
+  return sessionStorage.getItem(TOKEN_KEY);
 }
 
 function getRequiredToken(): string {
@@ -142,14 +138,12 @@ export async function fetchWithAuth(url: string, options: RequestInit = {}): Pro
   if (options.body && typeof options.body === "string" && !headers.has("Content-Type")) {
     headers.set("Content-Type", "application/json");
   }
-  console.log("First try" + url + " " + options + " " + headers);
   let response = await fetch(url, { ...options, headers });
 
   if (response.status === 401 || response.status === 403) {
     console.log("Access token expired! Triggering silent refresh...");
     
     const newToken = await refreshAccessToken();
-    console.log(newToken);
     if (newToken) {
       headers.set("Authorization", `Bearer ${newToken}`);
       

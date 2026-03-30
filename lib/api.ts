@@ -23,6 +23,5 @@ export async function fetchChairVariants(chairId: number): Promise<ChairVariant[
   if (!response.ok) {
     throw new Error("Failed to fetch chair variants");
   }
-
   return response.json();
 }

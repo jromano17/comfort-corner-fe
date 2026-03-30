@@ -27,7 +27,7 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 const TOKEN_KEY = "comfort_corner_token";
 const USER_KEY = "comfort_corner_user";
-const REFRESH_KEY = "refreshToken";
+const REFRESH_KEY = "comfort_corner_refresh_token";
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [token, setToken] = useState<string | null>(null);
@@ -47,8 +47,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const login = useCallback(async (data: LoginRequest) => {
     const response = await apiLogin(data);
-    console.log("auth context login:");
-    console.log(response);
     setToken(response.accessToken);   
     setUser(response.user);
     sessionStorage.setItem(TOKEN_KEY, response.accessToken);
@@ -59,7 +57,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, [router]);
 
   const register = useCallback(async (data: RegisterRequest) => {
-    console.log(data)
     const response = await apiRegister(data);
     setToken(response.accessToken);   
     setUser(response.user);
@@ -107,7 +104,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
 export function useAuth() {
   const context = useContext(AuthContext);
-  console.log(context)
   if (context === undefined) {
     throw new Error("useAuth must be used within an AuthProvider");
   }
