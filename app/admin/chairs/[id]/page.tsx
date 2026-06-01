@@ -77,6 +77,7 @@ export default function AdminChairDetailPage() {
   const { data: colorOptions } = useSWR("admin-colors", fetchColorOptions);
   const { data: dimensions } = useSWR("admin-dimensions", fetchDimensions);
 
+  const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "";
   const [isAddingVariant, setIsAddingVariant] = useState(false);
   const [isUploadingImage, setIsUploadingImage] = useState(false);
   const [variantForm, setVariantForm] = useState({
@@ -317,7 +318,7 @@ export default function AdminChairDetailPage() {
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
               {chair.galleryImageUrls.map((url, index) => (
                 <div key={index} className="relative aspect-square rounded-lg overflow-hidden border">
-                  <Image src={url} alt={`${chair.name} ${index + 1}`} fill className="object-cover" />
+                  <Image src={`${API_BASE_URL}${url}`} alt={`${chair.name} ${index + 1}`} fill className="object-cover" />
                 </div>
               ))}
             </div>
@@ -358,7 +359,7 @@ export default function AdminChairDetailPage() {
                   <TableRow key={variant.id}>
                     <TableCell>
                       <div className="relative h-12 w-12 rounded overflow-hidden">
-                        <Image src={variant.imageUrl} alt="" fill className="object-cover" />
+                        <Image src={`${API_BASE_URL}${variant.imageUrl}`} alt="" fill className="object-cover" />
                       </div>
                     </TableCell>
                     <TableCell>{variant.material.name}</TableCell>

@@ -23,8 +23,12 @@ import {
   Shipment,
   CreateShipment,
 } from "./types";
+import { getApiErrorMessage } from "./utils";
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "";
+
+
+
 
 // Categories
 export async function fetchCategories(): Promise<Category[]> {
@@ -40,8 +44,10 @@ export async function createCategory(
     body: JSON.stringify(data),
   });
   if (!response.ok) {
-    const error = await response.json().catch(() => ({}));
-    throw new Error(error.response.data.message || "Failed to create category");
+    //const error = await response.json().catch(() => ({}));
+    //throw new Error(Object.values(error.message).join(', ') || "Failed to create category");
+    const error = await getApiErrorMessage(response);
+    throw new Error(error);
   }
   return response.json();
 }
@@ -51,8 +57,10 @@ export async function deleteCategory(id: number): Promise<void> {
     method: "DELETE",
   });
   if (!response.ok) {
-    const error = await response.json().catch(() => ({}));
-    throw new Error(error.response.data.message || "Failed to delete category");
+    //const error = await response.json().catch(() => ({}));
+    //throw new Error(Object.values(error.message).join(', ') || "Failed to delete category");
+    const error = await getApiErrorMessage(response);
+    throw new Error(error);
   }
 }
 
@@ -70,8 +78,10 @@ export async function createSupplier(
     body: JSON.stringify(data),
   });
   if (!response.ok) {
-    const error = await response.json().catch(() => ({}));
-    throw new Error(error.response.data.message || "Failed to create supplier");
+    //const error = await response.json().catch(() => ({}));
+    //throw new Error(Object.values(error.message).join(', ') || "Failed to create supplier");
+    const error = await getApiErrorMessage(response);
+    throw new Error(error);
   }
   return response.json();
 }
@@ -81,8 +91,10 @@ export async function deleteSupplier(id: number): Promise<void> {
     method: "DELETE",
   });
   if (!response.ok) {
-    const error = await response.json().catch(() => ({}));
-    throw new Error(error.response.data.message || "Failed to delete supplier");
+    //const error = await response.json().catch(() => ({}));
+    //throw new Error(Object.values(error.message).join(', ') || "Failed to delete supplier");
+    const error = await getApiErrorMessage(response);
+    throw new Error(error);
   }
 }
 
@@ -93,10 +105,14 @@ export async function createChair(data: CreateChairRequest): Promise<Chair> {
     body: JSON.stringify(data),
   });
   if (!response.ok) {
-    const error = await response.json().catch(() => ({}));
-    throw new Error(error.response.data.message || "Failed to create chair");}
+    //const error = await response.json().catch(() => ({}));
+    //throw new Error(Object.values(error.message).join(', ') || "Failed to create chair");
+    const error = await getApiErrorMessage(response);
+    throw new Error(error);
+    }
   return response.json();
 }
+
 
 export async function uploadChairImages(
   chairId: number,
@@ -112,8 +128,10 @@ export async function uploadChairImages(
     body: formData,
   });
   if (!response.ok) {
-    const error = await response.json().catch(() => ({}));
-    throw new Error(error.response.data.message || "Failed to upload images");
+    //const error = await response.json().catch(() => ({}));
+    //throw new Error(Object.values(error.message).join(', ') || "Failed to upload images");
+    const error = await getApiErrorMessage(response);
+    throw new Error(error);
   }
   return response.json();
 }
@@ -129,8 +147,10 @@ export async function uploadChairImage(
     body: formData,
   });
   if (!response.ok) {
-    const error = await response.json().catch(() => ({}));
-    throw new Error(error.response.data.message || "Failed to upload image");
+    //const error = await response.json().catch(() => ({}));
+    //throw new Error(Object.values(error.message).join(', ') || "Failed to upload image");
+    const error = await getApiErrorMessage(response);
+    throw new Error(error);
   }
   return response.text();
 }
@@ -140,8 +160,10 @@ export async function deleteChair(id: number): Promise<void> {
     method: "DELETE",
   });
   if (!response.ok) {
-    const error = await response.json().catch(() => ({}));
-    throw new Error(error.response.data.message || "Failed to delete chair");
+    //const error = await response.json().catch(() => ({}));
+    //throw new Error(Object.values(error.message).join(', ') || "Failed to delete chair");
+    const error = await getApiErrorMessage(response);
+    throw new Error(error);
   }
 }
 
@@ -159,8 +181,10 @@ export async function createMaterial(
     body: JSON.stringify(data),
   });
   if (!response.ok) {
-    const error = await response.json().catch(() => ({}));
-    throw new Error(error.response.data.message || "Failed to create material");
+    //const error = await response.json().catch(() => ({}));
+    //throw new Error(Object.values(error.message).join(', ') || "Failed to create material");
+    const error = await getApiErrorMessage(response);
+    throw new Error(error);
   }
   return response.json();
 }
@@ -169,8 +193,10 @@ export async function createMaterial(
 export async function fetchColorOptions(): Promise<ColorOption[]> {
   const response = await fetch(`${API_BASE_URL}/api/color-options`);
   if (!response.ok) {
-    const error = await response.json().catch(() => ({}));
-    throw new Error(error.response.data.message || "Failed to fetch color options");
+    //const error = await response.json().catch(() => ({}));
+    //throw new Error(Object.values(error.message).join(', ') || "Failed to fetch color options");
+    const error = await getApiErrorMessage(response);
+    throw new Error(error);
   }
   return response.json();
 }
@@ -182,8 +208,10 @@ export async function createColorOption(
     body: JSON.stringify(data),
   });
   if (!response.ok) {
-    const error = await response.json().catch(() => ({}));
-    throw new Error(error.response.data.message || "Failed to create color option");
+    //const error = await response.json().catch(() => ({}));
+    //throw new Error(Object.values(error.message).join(', ') || "Failed to create color option");
+    const error = await getApiErrorMessage(response);
+    throw new Error(error);
   }
   return response.json();
 }
@@ -202,8 +230,10 @@ export async function createDimension(
     body: JSON.stringify(data),
   });
   if (!response.ok) {
-    const error = await response.json().catch(() => ({}));
-    throw new Error(error.response.data.message || "Failed to create dimension");
+    //const error = await response.json().catch(() => ({}));
+    //throw new Error(Object.values(error.message).join(', ') || "Failed to create dimension");
+    const error = await getApiErrorMessage(response);
+    throw new Error(error);
   }
   return response.json();
 }
@@ -216,8 +246,10 @@ export async function createChairVariant(
     body: JSON.stringify(data),
   });
   if (!response.ok) {
-    const error = await response.json().catch(() => ({}));
-    throw new Error(error.response.data.message || "Failed to create chair variant");
+    //const error = await response.json().catch(() => ({}));
+    //throw new Error(Object.values(error.message).join(', ') || "Failed to create chair variant");
+    const error = await getApiErrorMessage(response);
+    throw new Error(error);
   }
   return response.json();
 }
@@ -235,8 +267,10 @@ export async function uploadVariantImage(
     }
   );
   if (!response.ok){
-    const error = await response.json().catch(() => ({}));
-     throw new Error(error.response.data.message || "Failed to upload variant image");
+     //const error = await response.json().catch(() => ({}));
+     //throw new Error(Object.values(error.message).join(', ') || "Failed to upload variant image");
+    const error = await getApiErrorMessage(response);
+    throw new Error(error);
     }
   return response.text();
 }
@@ -247,8 +281,10 @@ export async function deleteChairVariant(
     method: "DELETE",
   });
   if (!response.ok) {
-    const error = await response.json().catch(() => ({}));
-    throw new Error(error.response.data.message || "Failed to delete chair variant");
+    //const error = await response.json().catch(() => ({}));
+    //throw new Error(Object.values(error.message).join(', ') || "Failed to delete chair variant");
+    const error = await getApiErrorMessage(response);
+    throw new Error(error);
   }
 }
 
@@ -259,8 +295,10 @@ export async function fetchOrders(): Promise<Order[]> {
     method: "GET",
   });
   if (!response.ok) {
-    const error = await response.json().catch(() => ({}));
-    throw new Error(error.response.data.message || "Failed to fetch orders");
+    //const error = await response.json().catch(() => ({}));
+    //throw new Error(Object.values(error.message).join(', ') || "Failed to fetch orders");
+    const error = await getApiErrorMessage(response);
+    throw new Error(error);
   }
 
   const data = await response.json(); 
@@ -272,8 +310,11 @@ export async function fetchIncomes(): Promise<Income[]> {
     method: "GET",
   });
   if (!response.ok) {
-    const error = await response.json().catch(() => ({}));
-    throw new Error(error.response.data.message || "Failed to fetch incomes");}
+    //const error = await response.json().catch(() => ({}));
+    //throw new Error(Object.values(error.message).join(', ') || "Failed to fetch incomes");
+    const error = await getApiErrorMessage(response);
+    throw new Error(error);
+    }
   return response.json();
 }
 
@@ -293,8 +334,11 @@ export async function fetchOrderss(
   });
   
   if (!response.ok) {
-    const error = await response.json().catch(() => ({}));
-    throw new Error(error.response.data.message || "Failed to fetch orders");}
+    //const error = await response.json().catch(() => ({}));
+    //throw new Error(Object.values(error.message).join(', ') || "Failed to fetch orders");
+    const error = await getApiErrorMessage(response);
+    throw new Error(error);
+  }
   
   const data = await response.json();
   return data; 
@@ -305,8 +349,11 @@ export async function fetchOrderById(orderId: string): Promise<OrderDetail> {
     method: "GET",
   });
   if (!response.ok) {
-    const error = await response.json().catch(() => ({}));
-    throw new Error(error.response.data.message || "Failed to fetch order with ID:" + orderId);}
+    //const error = await response.json().catch(() => ({}));
+    //throw new Error(Object.values(error.message).join(', ') || "Failed to fetch order with ID:" + orderId);
+    const error = await getApiErrorMessage(response);
+    throw new Error(error);
+  }
   let s = await response.json();
   return s;
 }
@@ -326,8 +373,10 @@ export async function changeOrderStatus(
   });
   
   if (!response.ok) {
-    const errorData = await response.json().catch(() => ({}));
-    throw new Error(errorData.response.data.message || `Failed to update order to ${newStatus}`);
+    //const errorData = await response.json().catch(() => ({}));
+    //throw new Error(errorData.response.data.message || `Failed to update order to ${newStatus}`);
+    const error = await getApiErrorMessage(response);
+    throw new Error(error);
   }
 
   return response.json();
@@ -339,10 +388,11 @@ export async function createIncomeRecord(
     body: JSON.stringify(data)
   });
   
-  console.log(response);
   if (!response.ok) {
-    const errorData = await response.json().catch(() => ({}));
-    throw new Error(errorData.response.data.message || `Failed to add an income record to order with ID ${data.orderId}`);
+    //const errorData = await response.json().catch(() => ({}));
+    //throw new Error(errorData.response.data.message || `Failed to add an income record to order with ID ${data.orderId}`);
+    const error = await getApiErrorMessage(response);
+    throw new Error(error);
   }
 
   return response.json();
@@ -357,8 +407,11 @@ export async function updateShipmentStatus(
   });
 
   if (!response.ok) {
-    const error = await response.json().catch(() => ({}));
-    throw new Error(error.response.data.message || "Failed to change shipment status");}
+    //const error = await response.json().catch(() => ({}));
+    //throw new Error(Object.values(error.message).join(', ') || "Failed to change shipment status");
+    const error = await getApiErrorMessage(response);
+    throw new Error(error);
+    }
   return response.json();
 }
 export async function createShipment(
@@ -367,10 +420,11 @@ export async function createShipment(
     method: "POST",
     body: JSON.stringify(data),
   });
-  console.log(data);
-  console.log(response);
   if (!response.ok) {
-    const error = await response.json().catch(() => ({}));
-    throw new Error(error.response.data.message || "Failed to create shipment");}
+    //const error = await response.json().catch(() => ({}));
+    //throw new Error(Object.values(error.message).join(', ') || "Failed to create shipment");
+    const error = await getApiErrorMessage(response);
+    throw new Error(error);
+    }
   return response.json();
 }

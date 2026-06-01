@@ -28,7 +28,6 @@ export function CartProvider({ children }: { children: ReactNode }) {
   const [cartItems, setItems] = useState<CartItem[]>([]);
   const [isHydrated, setIsHydrated] = useState(false);
 
-  // Load cart from localStorage on mount
   useEffect(() => {
     const stored = localStorage.getItem(CART_STORAGE_KEY);
     if (stored) {
@@ -41,7 +40,6 @@ export function CartProvider({ children }: { children: ReactNode }) {
     setIsHydrated(true);
   }, []);
 
-  // Save cart to localStorage when items change
   useEffect(() => {
     if (isHydrated) {
       localStorage.setItem(CART_STORAGE_KEY, JSON.stringify(cartItems));
@@ -56,7 +54,6 @@ export function CartProvider({ children }: { children: ReactNode }) {
         );
 
         if (existingIndex >= 0) {
-          // Update quantity if item exists
           const updated = [...prev];
           updated[existingIndex] = {
             ...updated[existingIndex],
@@ -65,7 +62,6 @@ export function CartProvider({ children }: { children: ReactNode }) {
           return updated;
         }
 
-        // Add new item
         return [...prev, { variant, chairName, quantity }];
       });
     },

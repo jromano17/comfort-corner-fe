@@ -1,4 +1,5 @@
 import { AuthResponse, LoginRequest, RegisterRequest, UserRole } from "./types";
+import { getApiErrorMessage } from "./utils";
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "";
 const TOKEN_KEY = "comfort_corner_token";
@@ -14,8 +15,10 @@ export async function login(data: LoginRequest): Promise<AuthResponse> {
     body: JSON.stringify(data),
   });
   if (!response.ok) {
-    const error = await response.json().catch(() => ({}));
-    throw new Error(error.response.data.message || "Login failed");
+    //const error = await response.json().catch(() => ({}));
+    //throw new Error(Object.values(error.message).join(', ') || "Login failed");
+    const error = await getApiErrorMessage(response);
+    throw new Error(error);
   }
 
   const rawData = await response.json();
@@ -41,8 +44,10 @@ export async function register(data: RegisterRequest): Promise<AuthResponse> {
     body: JSON.stringify(data),
   });
   if (!response.ok) {
-    const error = await response.json().catch(() => ({}));
-    throw new Error(error.response.data.message || "Registration failed");
+    //const error = await response.json().catch(() => ({}));
+    //throw new Error(Object.values(error.message).join(', ') || "Registration failed");
+    const error = await getApiErrorMessage(response);
+    throw new Error(error);
   }
 
   const rawData = await response.json();
@@ -68,8 +73,10 @@ export async function logout(token: string): Promise<void> {
   });
 
   if (!response.ok) {
-    const error = await response.json().catch(() => ({}));
-    throw new Error(error.response.data.message || "Logout failed");
+    //const error = await response.json().catch(() => ({}));
+    //throw new Error(Object.values(error.message).join(', ') || "Logout failed");
+    const error = await getApiErrorMessage(response);
+    throw new Error(error);
   }
 }
 
@@ -89,33 +96,7 @@ export async function refreshToken(token: string): Promise<AuthResponse> {
   return response.json();
 }
 
-async function refreshAccessToken(): Promise<string | null> {
-  try {
-    const refreshToken = sessionStorage.getItem(REFRESH_KEY);
-    if (!refreshToken) throw new Error("No refresh token available");
 
-    const response = await fetch(`${API_BASE_URL}/api/auth/refresh-token`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ token: refreshToken }), 
-    });
-
-    if (!response.ok) throw new Error("Refresh token expired or invalid");
-
-    const data = await response.json();
-    sessionStorage.setItem(TOKEN_KEY, data.accessToken);
-    if (data.refreshToken) {
-      sessionStorage.setItem(REFRESH_KEY, data.refreshToken);
-    }
-
-    return data.accessToken;
-  } catch (error) {
-    sessionStorage.removeItem(TOKEN_KEY);
-    sessionStorage.removeItem(REFRESH_KEY);
-    window.location.href = "/login"; 
-    return null;
-  }
-}
 function getStoredToken(): string | null {
   if (typeof window === "undefined") return null;
   return sessionStorage.getItem(TOKEN_KEY);
@@ -152,4 +133,73 @@ export async function fetchWithAuth(url: string, options: RequestInit = {}): Pro
   }
 
   return response;
+}
+/*
+async function refreshAccessToken(): Promise<string | null> {
+  try {
+    const refreshToken = localStorage.getItem(REFRESH_KEY);
+    if (!refreshToken) throw new Error("No refresh token available");
+
+    const response = await fetch(`${API_BASE_URL}/api/auth/refresh-token`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ token: refreshToken }), 
+    });
+
+    if (!response.ok) throw new Error("Refresh token expired or invalid");
+
+    const data = await response.json();
+    sessionStorage.setItem(TOKEN_KEY, data.accessToken);
+    if (data.refreshToken) {
+      localStorage.setItem(REFRESH_KEY, data.refreshToken);
+    }
+
+    return data.accessToken;
+  } catch (error) {
+    sessionStorage.removeItem(TOKEN_KEY);
+    localStorage.removeItem(REFRESH_KEY);
+    window.location.href = "/login"; 
+    return null;
+  }
+}*/
+
+let refreshTokenPromise: Promise<string | null> | null = null;
+async function refreshAccessToken(): Promise<string | null> {
+  if (refreshTokenPromise) {
+    return refreshTokenPromise;
+  }
+
+  refreshTokenPromise = (async () => {
+    try {
+      const refreshToken = localStorage.getItem(REFRESH_KEY);
+      
+      if (!refreshToken) throw new Error("No refresh token available");
+
+      const response = await fetch(`${API_BASE_URL}/api/auth/refresh-token`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ token: refreshToken }), 
+      });
+
+      if (!response.ok) throw new Error("Refresh token expired or invalid");
+
+      const data = await response.json();
+      
+      sessionStorage.setItem(TOKEN_KEY, data.accessToken);      
+      if (data.refreshToken) {
+        localStorage.setItem(REFRESH_KEY, data.refreshToken);
+      }
+
+      return data.accessToken;
+    } catch (error) {
+      sessionStorage.removeItem(TOKEN_KEY);
+      localStorage.removeItem(REFRESH_KEY);
+      window.location.href = "/login"; 
+      return null;
+    } finally {
+      refreshTokenPromise = null;
+    }
+  })();
+
+  return refreshTokenPromise;
 }

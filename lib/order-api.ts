@@ -1,5 +1,6 @@
 import { fetchWithAuth } from "./auth-api";
 import { CreateOrderRequest, Order, PaginatedOrders, Shipment } from "./types";
+import { getApiErrorMessage } from "./utils";
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "";
 
@@ -14,8 +15,12 @@ export async function createOrder(
   });
 
   if (!response.ok) {
-    const error = await response.json().catch(() => ({}));
-    throw new Error(error.response.data.message || "Failed to create order");
+    //const error = await response.json().catch(() => ({}));
+    //throw new Error(Object.values(error.message).join(', ') || "Failed to create order");
+    console.log(response);
+    const error = await getApiErrorMessage(response);
+    console.log(error);
+    throw new Error(error);
   }
 
   return response.json();

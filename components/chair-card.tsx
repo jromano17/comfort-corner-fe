@@ -9,9 +9,11 @@ interface ChairCardProps {
   chair: Chair;
 }
 
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "";
+
 export function ChairCard({ chair }: ChairCardProps) {
   console.log(chair.galleryImageUrls);
-  const thumbnailImage = chair.galleryImageUrls?.[0] || "/placeholder-chair.jpg";
+  const thumbnailImage = `${API_BASE_URL}${chair.galleryImageUrls?.[0]}` || "/placeholder-chair.jpg";
 
   return (
     <Link href={`/chairs/${chair.id}`} className="group block">

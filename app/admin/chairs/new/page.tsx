@@ -64,6 +64,8 @@ export default function NewChairPage() {
   const [newSupplierCountry, setNewSupplierCountry] = useState("");
   const [creatingSupplier, setCreatingSupplier] = useState(false);
 
+  const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "";
+  
   const { data: categories, mutate: mutateCategories } = useSWR(
     "categories",
     fetchCategories
@@ -386,7 +388,7 @@ export default function NewChairPage() {
                       className="group relative aspect-square overflow-hidden rounded-lg"
                     >
                       <Image
-                        src={preview}
+                        src={`${preview}`}
                         alt={`Preview ${index + 1}`}
                         fill
                         className="object-cover"

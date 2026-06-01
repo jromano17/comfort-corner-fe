@@ -28,7 +28,7 @@ export default function CheckoutPage() {
   const router = useRouter();
   const { cartItems, totalAmount, clearCart } = useCart(); 
   const { token } = useAuth();
-  
+  const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "";
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [useSameAddress, setUseSameAddress] = useState(true);
   
@@ -98,9 +98,9 @@ export default function CheckoutPage() {
     <Header />
     <div className="max-w-6xl mx-auto pb-12">
       <Button variant="ghost" asChild className="mb-6">
-        <Link href="/cart" className="flex items-center gap-2">
+        <Link href="/" className="flex items-center gap-2">
           <ArrowLeft className="h-4 w-4" />
-          Back to Cart
+          Back to Catalouge
         </Link>
       </Button>
 
@@ -214,7 +214,7 @@ export default function CheckoutPage() {
                   <div key={index} className="flex gap-4">
                     {/* Placeholder for item image if you have it in context */}
                     <div className="h-16 w-16 bg-muted rounded-md flex-shrink-0 overflow-hidden">
-                      <img src={item.variant.image} alt="chair" className="h-full w-full object-cover" />
+                      <img src={`${API_BASE_URL}${item.variant.imageUrl}`} alt="chair" className="h-full w-full object-cover" />
                     </div>
                     <div className="flex-1 space-y-1">
                       <h4 className="font-medium text-sm">{item.chairName}</h4>

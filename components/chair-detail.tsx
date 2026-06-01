@@ -24,6 +24,7 @@ export function ChairDetail({ chairId }: ChairDetailProps) {
   const { isAuthenticated } = useAuth();
   const { addItem } = useCart();
 
+  const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "";
   const { data: chair, error: chairError, isLoading: chairLoading } = useSWR(
     `chair-${chairId}`,
     () => fetchChairById(chairId)
@@ -40,25 +41,22 @@ export function ChairDetail({ chairId }: ChairDetailProps) {
     }
   }, [variants, selectedVariant]);
 
-  // Combine chair gallery images with variant images
   const galleryImages = useMemo(() => {
     const images: { url: string; alt: string }[] = [];
     
-    // Add chair gallery images first
     if (chair?.galleryImageUrls) {
       chair.galleryImageUrls.forEach((url, index) => {
         images.push({
-          url,
+          url: `${API_BASE_URL}${url}`,
           alt: `${chair.name} - Image ${index + 1}`,
         });
       });
     }
     
-    // Add variant images
     if (variants) {
       variants.forEach((variant) => {
         images.push({
-          url: variant.imageUrl,
+          url: `${API_BASE_URL}${variant.imageUrl}`,
           alt: `${chair?.name || "Chair"} - ${variant.material.name} in ${variant.colorOption.name}`,
         });
       });
